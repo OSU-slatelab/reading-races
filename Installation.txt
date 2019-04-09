@@ -25,4 +25,5 @@
 	2. addstudent.html
 	3. availableStories.html
 	4. availableStudents.html
+	5. studentMenu.html
 	
