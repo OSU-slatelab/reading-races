@@ -1,0 +1,28 @@
+//To run the program in the local system,
+
+=> Install Python 3 if it is not available in your system. 
+=> Run the following command in the command window with the downloaded readingRaces folder as the current directory with a port number
+	python -m http.server 8100 (for windows OS)
+	python3 -m http.server 8100 (for MAC OS)
+	
+=> Open the "readingRaces.html".
+
+
+//To create an instance of Amazon DynamoDB database
+
+1. Sign up for AWS.
+2. Get an AWS access key.
+	a) Open the IAM console 
+	(https://console.aws.amazon.com/iam/home?#/home).
+	b) In the navigation pane of the console, choose Users.
+	c) Choose your IAM user name (not the check box).
+	d) Choose the Security credentials tab and then choose Create access key.
+	e) To see the new access key, choose Show. Your credentials will look something like this:
+		Access key ID: AKIAIOSFODNN7EXAMPLE
+		Secret access key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+3. Use the above Access key ID and Secret access key in the following files:
+	1. addstory.html
+	2. addstudent.html
+	3. availableStories.html
+	4. availableStudents.html
+	

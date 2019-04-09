@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    background-color: #EAEDED;
+}
+.button {
+	width: 100%;
+	height: 100%;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    overflow: auto;
+    border-radius: 8px;
+    padding: 15px 31px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.button:hover {
+    background-color: #555;
+    color: white;
+}
+.header {
+	height: 5%;
+    background-color: #2196F3;
+    color: white;
+    text-align: center;
+    padding: 7px;
+}
+.passageHeader{
+	height: 10%;
+    background-color: #2196F3;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+.upload {
+	margin: 0;
+    background-color: rgb(0.6,0.2,0.2);
+    color: white;
+    text-align: center;
+    padding: 5px;
+    display: block;
+}
+.footer {
+	float: right;
+	margin-top: 5px;
+	margin-right: 30px;
+    background-color: #00ffff;
+    color: white;
+    padding: 5px;
+}
+.column {
+	height: 75%;
+    float: right;
+    padding-right: 3%;
+}
+.clearfix::after {
+	margin: 20px 20px 20px 5px;
+    content: "";
+    clear: both;
+    display: table;
+}
+.sidemenu {
+    width: 20%;
+}
+.content {
+	margin: 30px;
+	margin-bottom: 0px;
+	overflow: auto;
+	display: block;
+	width: 75%;
+	border: 1px solid red;
+	background-color: #D7DBDD;
+
+	height: 380px;
+}
+.sidemenu ul {
+    list-style-type: none;
+    height: 80px;
+}
+.sidemenu li a {
+    margin-bottom: 4px;
+    height: 50px;
+    color: red;
+    display: block;
+    padding: 8px;
+    background-color: #ff9933;
+    text-decoration: solid;
+}
+.sidemenu li a:hover {
+    background-color: #555;
+    color: white;
+}
+.sidemenu li a.active {
+    background-color: #008CBA;
+    color: white;
+}
+.passage {
+	margin-top: 10px;
+	margin-left: 10px;
+	text-align: justify;
+}
+.result{
+	margin-left: 10px;
+	text-align: justify;
+}
+.form-popup {
+  display: none;
+}
+
+.dropbtn {
+  height: 30px;
+  background-color: #3498DB;
+  color: white;
+  padding: 6px;
+  font-size: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+  background-color: #2980B9;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: relative;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content p {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.dropdown-content div {
+  text-align: left;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+
+.studentdetails {
+	float: left;
+	margin: 0;
+}
+.gap {
+	height: 1%;
+    background-color: #2196F3;
+    color: white;
+    text-align: center;
+    padding: 7px;
+}
+</style>
+</head>
+<body onload="init()">
+<script type="text/javascript" src="rrSpeechRecognizer.js"></script>
+<div class="header">
+	<h1> Reading Races </h1>
+</div>
+<div class="upload">
+	Select a student: 
+ 	<button onclick="studentRecords()" class="dropbtn">select</button>
+ 	<div id="myDropdown" class="dropdown-content">
+  	</div>
+  	<div id="curentStudent" class="dropdown-content" style="display: none; background-color: rgb(0.6,0.2,0.2);">
+	    <div class="studentdetails" style="width: 10%">
+			<h3>Student Name :</h3>
+		</div>
+		<div class="studentdetails" style="width: 20%">
+			<h3 id="studentCurName"></h3>
+		</div>
+		<div class="studentdetails" style="width: 10%">
+			<h3>Grade :</h3>
+		</div>
+		<div class="studentdetails" style="width: 7%">
+			<h3 id="studentCurGrade"></h3>
+		</div>
+		<div class="studentdetails" style="width: 47%">
+			<h3>Reading Goal in words per minute (WPM) :</h3>
+		</div>
+		<div class="studentdetails" style="width: 5%; padding-top: 20px;">
+			<input id="wpmGoal" type="number" name="quantity" value="65" min="40" max="120">
+		</div>
+  	</div>
+</div>
+<div class="upload">
+	Select a story: 
+ 	<button onclick="showStories()" class="dropbtn">select</button>
+ 	<div id="storiesDropdown" class="dropdown-content">
+  	</div>
+</div>
+<div class="clearfix">
+	<div class="column sidemenu">
+		<ul>
+			<li><button class="button" onclick="sample()">Begin</button></li>
+			<li><button class="button" onclick="sample()">Practice Words</button></li>
+			<li><button class="button" onclick="readPassageToMe()">Read to me</button></li>
+			<li><button class="button" onclick="readAlong()">Read Along</button></li>
+			<li><button class="button" onclick="listenToMe()">Listen to me</button></li>
+			<li><button class="button" onclick="startReading()">Timed Reading</button></li>
+			<li><button class="button" id="stopButton">Stop</button></li>
+		</ul>
+	</div>
+	<div class="column content">
+		<h3> Title : </h3>
+		<div class="passage" id="curTitle"> </div>
+		<h3> Passage : </h3>
+		<div class="passage" id="passage"> </div>
+		<h4> Recognized text :</h4>
+		<div class="result" id="result"></div>
+		<div id="cwpm"></div>
+	</div>
+</div>
+<div class="footer">
+	<a href="readingraces.html">Go back</a>
+</div>
+<div id="result"></div>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.422.0.min.js"></script>
+<script>
+//DB details
+var storiesTABLE="stories";
+var studentsTABLE="students";
+var dynamodb;
+var docClient;
+function init(){
+  AWS.config.update({
+    region: "us-west-2",
+    accessKeyId: "AKIAICBIT4WEFE63PC5A",
+    secretAccessKey: "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"
+  });
+  dynamodb = new AWS.DynamoDB();
+  docClient = new AWS.DynamoDB.DocumentClient();
+}
+
+const stopWords=new Set(['to','a','in','the','of','be']);
+var simulatedtime=[],simulatedInterim=[];
+var standardReadings=[];
+var refObject;
+var correctwords=0;
+var sentenceStartings=[];
+var passageContent;
+var passageContentArray;
+var recordedlines="";
+var timeinSecs=10;	
+var timer;
+var recognizedText='';
+var ending;
+var isReferenceFileAvailable = false;
+var normFactor=1;
+var threshold=2.2;
+var speechRecognizer;
+var humanSmin=-2,humanSmax=5,recSmin=-5,recSmax=1,timeDiffMin=-492.28,timeDiffMax=495.38;
+
+
+function studentRecords(){
+	document.getElementById("myDropdown").classList.toggle("show");
+	getStudentsList(studentsTABLE,displayStudentsList);
+}
+function getStudentsList(table,callback) {
+  	var dbcontent = {};
+    var students = [];
+    dbcontent.students = students;
+    var params = {
+        TableName: table,
+        ProjectionExpression: "#nm, grade, wpm, wpmGoal",
+        ExpressionAttributeNames: {
+            "#nm": "name",
+        },
+    };
+    docClient.scan(params, onScan);
+    function onScan(err, data) {
+        if (err) {
+            console.error(JSON.stringify(err, undefined, 2));
+        } else {
+            // Print all the movies
+            var count=0;
+            data.Items.forEach(function(student) {
+                count=count+1;
+                var record = {
+                  "Index": count,
+                  "Name": student.name
+                }
+                students.push(record);
+                console.log(student.name + ": " + student.grade + ": " + student.wpm + ": " + student.wpmGoal);
+            });  
+            callback(table,dbcontent);        
+        }
+  }
+}
+function displayStudentsList(stable,dbcontent){
+      console.log(dbcontent);
+      var students=dbcontent.students;
+      var table= document.getElementById("myDropdown");
+      var tableRows = table.getElementsByTagName('p');
+      var rowCount = tableRows.length;
+      console.log(tableRows);
+      while (table.getElementsByTagName('p').length>0) {
+          table.removeChild(table.childNodes[0]);
+          console.log(tableRows);
+      }
+      console.log(students);
+      students.forEach(function(entry){
+        console.log(entry);
+        var node=document.createElement('p');
+        var row=table.appendChild(node);
+        var key=entry.Name;
+        node.innerHTML = key;
+        node.onclick=function() {displaycurrentStudent(stable,key);};
+      });
+}
+function displaycurrentStudent(stdtable,key){
+  document.getElementById("myDropdown").classList.toggle("show");
+  document.getElementById("curentStudent").style.display="block";
+  var params = {
+        TableName: stdtable,
+        Key:{
+            "name": key
+        }
+    };
+    docClient.get(params, function(err, data) {
+        if (err) {
+            console.log(JSON.stringify(err, undefined, 2));
+        } else {
+            document.getElementById("studentCurName").innerHTML = data.Item.name;
+            document.getElementById("studentCurGrade").innerHTML = data.Item.grade;
+            document.getElementById("wpmGoal").value = data.Item.wpmGoal;
+            console.log(data);
+        }
+    });
+}
+//stories start
+function showStories(){
+	document.getElementById("storiesDropdown").classList.toggle("show");
+	getStoriesList(storiesTABLE,displayStoriesList);
+}
+function getStoriesList(table,callback) {
+  var dbcontent = {};
+  var stories = [];
+  dbcontent.stories = stories;
+  var params = {
+        TableName: table,
+        ProjectionExpression: "title",
+  };
+  docClient.scan(params, onScan);
+  function onScan(err, data) {
+        if (err) {
+            console.error(JSON.stringify(err, undefined, 2));
+        } else {
+            // Print all the stories
+            var count=0;
+            data.Items.forEach(function(data) {
+                count=count+1;
+                var story = {
+                  "Index": count,
+                  "Title": data.title
+                }
+                stories.push(story);
+                console.log(story);
+            });  
+            callback(table,dbcontent);        
+        }
+  }
+}
+function displayStoriesList(stable,dbcontent){
+      console.log(dbcontent);
+      var stories=dbcontent.stories;
+      var table= document.getElementById("storiesDropdown");
+      var tableRows = table.getElementsByTagName('p');
+      var rowCount = tableRows.length;
+      console.log(tableRows);
+      while (table.getElementsByTagName('p').length>0) {
+          table.removeChild(table.childNodes[0]);
+          console.log(tableRows);
+      }
+      console.log(stories);
+      stories.forEach(function(entry){
+        console.log(entry);
+        var node=document.createElement('p');
+        var row=table.appendChild(node);
+        var key=entry.Title;
+        node.innerHTML = key;
+        node.onclick=function() {displaycurrentStory(stable,key);};
+      });
+}
+function displaycurrentStory(stdtable,key){
+  document.getElementById("storiesDropdown").classList.toggle("show");
+  var params = {
+        TableName: stdtable,
+        Key:{
+            "title": key
+        }
+    };
+    docClient.get(params, function(err, data) {
+        if (err) {
+            console.log(JSON.stringify(err, undefined, 2));
+        } else {
+            document.getElementById("curTitle").innerHTML = data.Item.title;
+            passageContent = data.Item.content.replace(/[\r\n]+/g," ").replace(/ +/g," ").trim();
+            passageContentArray=passageContent.split(" ");
+
+            if(data.Item.hasOwnProperty('reff')){
+              isReferenceFileAvailable = true;
+              refObject = JSON.parse(data.Item.reff);
+              standardReadings = [];
+             }else{
+              isReferenceFileAvailable = false;
+             }
+            startIndexing(passageContentArray);
+            console.log(data);
+        }
+    });
+}
+//stories end
+
+function listenToMe(){
+	timer = new myTimer(stopSpeaking,timeinSecs*1000);
+}
+function readtheWord(i){
+	var txt=document.getElementById(i).textContent.trim();
+	var to_speak = new SpeechSynthesisUtterance(txt);
+    speechSynthesis.speak(to_speak);
+}
+function standardReading(word, steps, recTime, recWords){
+	this.word=word;
+	this.steps=steps;
+	this.recTime=recTime;
+	this.recWords=recWords; 
+}
+
+function startIndexing(passageContentArray) {
+	sentenceStartings=[];
+	var r = document.getElementById('passage');
+	sentenceStartings.push(1);
+	var simulatedIdx=0,prev=-1,sprev=-1,sdone=1;
+	var scount=0,stime=0;
+	while (r.getElementsByTagName('a').length>0) {
+          r.removeChild(r.childNodes[0]);
+      }
+	var ScountV=0;
+	for (var k = 0; k<passageContentArray.length ; k++) {
+		let a=document.createElement('a');
+		r.appendChild(a);
+		a.setAttribute("id",k+1);
+		a.setAttribute("onClick","helpHere(id)");
+		a.textContent=" "+passageContentArray[k];
+		if(passageContentArray[k].charAt(passageContentArray[k].length-1)=='.'){
+			var t=k+2;
+			sentenceStartings.push(t);
+		}
+		if(isReferenceFileAvailable){
+			standardReadings.push(new standardReading(refObject.standardReadings[k].word,refObject.standardReadings[k].steps,refObject.standardReadings[k].recTime,new Set(refObject.standardReadings[k].recWords)));
+		}
+	}
+	ending=passageContentArray.length;
+}
+function sayIt(i){
+	var txt=document.getElementById(i).textContent.trim();
+	var to_speak = new SpeechSynthesisUtterance(txt);
+    speechSynthesis.speak(to_speak);
+	var startAgainIdx=1;
+	for(var idx=1;idx<sentenceStartings.length;idx++){
+		if(i<sentenceStartings[idx]){
+			if(i>=sentenceStartings[idx-1]){
+				startAgainIdx=sentenceStartings[idx-1];
+			}
+		}else{
+			startAgainIdx=sentenceStartings[idx];
+		}
+	}
+	timer.resume();				
+	continueSpeaking(givenRate,startAgainIdx);	
+}
+function helpHere(i){
+	if(speechSynthesis.speaking){
+		timer.pause();
+		speechSynthesis.cancel();
+		sayIt(i);
+	}else{
+		var txt=document.getElementById(i).textContent.trim();
+		var to_speak = new SpeechSynthesisUtterance(txt);
+		speechSynthesis.speak(to_speak);
+		var startAgainIdx=1;
+		for(var idx=1;idx<sentenceStartings.length;idx++){
+			if(i<sentenceStartings[idx]){
+				if(i>=sentenceStartings[idx-1]){
+					startAgainIdx=sentenceStartings[idx-1];
+				}
+			}else{
+				startAgainIdx=sentenceStartings[idx];
+			}
+		}
+		timer.resume();				
+		continueSpeaking(givenRate,startAgainIdx);
+	}
+}
+function stopSpeaking(){
+	speechSynthesis.cancel();
+	alert("Done!");
+}
+function startSpeaking(rate){
+	givenRate=rate;
+	timer = new myTimer(stopSpeaking,timeinSecs*1000);
+	continueSpeaking(rate,1);
+}
+function continueSpeaking(rate,id){
+	if ( 'speechSynthesis' in window ) {
+		var text="";
+		for (var i = id; i<=ending; i++){
+			text +=" "+document.getElementById(i).textContent.trim();
+  		}
+  		var to_speak = new SpeechSynthesisUtterance(text.trim());
+  		to_speak.rate = rate;
+  		speechSynthesis.speak(to_speak);
+	} else{
+  		document.getElementById("result").textContent = 'Unfortunately your browser doesn’t support this feature.';
+	}
+}
+function myTimer(callback, delay) {
+    var timerId, start, remaining = delay;
+    this.pause = function() {
+        window.clearTimeout(timerId);
+        remaining -= (new Date() - start);
+    };
+    this.resume = function() {
+        start = new Date();
+        window.clearTimeout(timerId);
+        timerId = window.setTimeout(callback, remaining);
+    };
+    this.resume();
+}
+function highlightEndWord(i) {
+    document.getElementById(i).style.color = "green";
+    findErrors(i);
+}
+function highlightIncorrectWord(i) {
+    document.getElementById(i).style.color = "red";
+}
+function highlightSkippedWord(i) {
+    document.getElementById(i).style.color = "yellow";
+}
+function vowelsCount(word){
+	var vowels=0;
+	for(var i=0;i<word.length;i++){
+		var c=word.charAt(i);
+		if(c=='a' ||c=='e' ||c=='i' ||c=='o' ||c=='u'){
+			vowels++;
+		}
+	}
+	return vowels;
+}
+function compareResult(prevArray,curArray){
+	var min = Math.min(prevArray.length,curArray.length);
+	//if(min==0) return -1;
+	for(var i=0;i<min;i++){
+		if(prevArray[i]!=curArray[i]){
+			return i;
+		}
+	}
+	return -1;
+}
+function incorrectnessMagnitude(st,htime,hsteps,vowels,humanIntermWords){
+	var k1=0.3,k2=0.8,k3=0.7,k4=1.2;
+	var tv=htime-st.recTime;
+	var var1=(tv-timeDiffMin)/(timeDiffMax-timeDiffMin);
+	//console.log(tv);
+	var var2=(hsteps-vowels-humanSmin)/(humanSmax-humanSmin);
+	var var3=(vowels-st.steps-recSmin)/(recSmax-recSmin);
+	var matchCount=0,var4=0;
+	var simulatedIntermWords=st.recWords;
+    for(let mismatchWord of humanIntermWords){
+    	if(simulatedIntermWords.has(mismatchWord)) matchCount++;
+    }
+    if(humanIntermWords.length>0){
+    	var mismatchCount=humanIntermWords.length-matchCount;
+    	var tt=(mismatchCount)/humanIntermWords.length;
+    	var4=tt.toFixed(2);
+    }
+	var res=k1*var1+k2*var2+k3*var3+k4*var4;
+	console.log(res + " "+ var1 + " "+ var2+" "+var3+" "+var4);
+	return res;
+}
+function finalizeRest(prevArray,nextInterim,nextFinal,humanSteps,wordIdx, humanTime, humanIntermWords){
+	var res=wordIdx+1;
+	for(var i=nextInterim,j=wordIdx;i<prevArray.length && j<ending-nextFinal;i++,j++){
+		var t=document.getElementById(j+nextFinal).textContent.trim().toLowerCase().replace(/[^a-z\s]/gi,"").replace(/[\r\n]+/g," ").replace(/ +/g," ");
+		var s=prevArray[i].trim().toLowerCase().replace(/[^a-z\s]/gi,"").replace(/[\r\n]+/g," ").replace(/ +/g," ").trim();
+		var c=vowelsCount(s);
+		var mag=0;
+		if(stopWords.has(t)){
+			console.log(t);
+			correctwords++;
+			document.getElementById(j+nextFinal).style.color = "blue";
+		} 
+		else if(t==s){
+			if(isReferenceFileAvailable){
+				mag=incorrectnessMagnitude(standardReadings[j+nextFinal-1],humanTime,humanSteps,c,humanIntermWords);
+			}
+			console.log(s+" "+mag);
+			if(mag<=threshold || !isReferenceFileAvailable){
+				correctwords++;
+				document.getElementById(j+nextFinal).style.color = "blue";
+			}else{
+				document.getElementById(j+nextFinal).style.color = "red";
+			} 
+		}else{
+			for(var k=j+1;k<j+4 && k<ending-nextFinal;k++){
+				t=document.getElementById(k+nextFinal).textContent.trim().toLowerCase();
+				c=vowelsCount(t)+1;
+				if(t==s){
+					if(isReferenceFileAvailable){
+						mag=incorrectnessMagnitude(standardReadings[k+nextFinal-1],humanTime,humanSteps,c,humanIntermWords);
+					}
+					if(mag<=threshold || !isReferenceFileAvailable){
+						correctwords++;
+						document.getElementById(k+nextFinal).style.color = "blue";
+					}else{
+						document.getElementById(k+nextFinal).style.color = "red";
+					}
+					j=k;
+					break;	 
+				}
+				if(k==j+3 || k==ending-nextFinal-1){
+					document.getElementById(j+nextFinal).style.color = "red";
+				}
+			}
+		}
+		res=j+1;
+	}
+	return res;
+}
+function stopReading(){
+	speechRecognizer.stop();
+	alert("No of Correct Words read per minute are:"+correctwords*60/timeinSecs);
+	correctwords=0;
+}
+function startReading(){
+
+	//reseting the passage content.
+	sentenceStartings=[];
+	var r = document.getElementById('passage');
+	sentenceStartings.push(1);
+	var simulatedIdx=0,prev=-1,sprev=-1,sdone=1;
+	var scount=0,stime=0;
+	while (r.getElementsByTagName('a').length>0) {
+          r.removeChild(r.childNodes[0]);
+      }
+	var ScountV=0;
+	for (var k = 0; k<passageContentArray.length ; k++) {
+		let a=document.createElement('a');
+		r.appendChild(a);
+		a.setAttribute("id",k+1);
+		a.setAttribute("onClick","helpHere(id)");
+		a.textContent=" "+passageContentArray[k];
+		if(passageContentArray[k].charAt(passageContentArray[k].length-1)=='.'){
+			var t=k+2;
+			sentenceStartings.push(t);
+		}
+		if(isReferenceFileAvailable){
+			standardReadings.push(new standardReading(refObject.standardReadings[k].word,refObject.standardReadings[k].steps,refObject.standardReadings[k].recTime,new Set(refObject.standardReadings[k].recWords)));
+		}
+	}
+	ending=passageContentArray.length;
+
+	//timedReading starts here
+	var r = document.getElementById('result');
+	r.innerHTML = "";
+	correctwords=0;
+	var prev = "";
+	var prevArray=prev.split(" ");
+	//console.log(prevArray.length);
+	var next = 1;
+	var curArray;
+	var date = new Date();
+	var humanIntermWords=[],newhumanIntermWords=[];
+	var humanTimeEnd=0,humanTimeStart=window.performance.now();
+	//if('webkitSpeechRecognition' in window){
+		/*speechRecognizer = new webkitSpeechRecognition();
+		speechRecognizer.continuous = true;
+		speechRecognizer.interimResults = true;
+		speechRecognizer.lang = 'en-US';
+		speechRecognizer.start();*/
+		var continuous = true;
+		var interimResults = true;
+		var lang = 'en-US';
+		speechRecognizer = rrSpeechRecognizer(continuous,interimResults,lang);
+		window.setTimeout(stopReading,timeinSecs*1000);
+		var finalTranscripts = '';
+		//let p;
+		var matchIdx;
+		var interimIdx=0;
+		var wordIdx=0;
+		var life=0;
+		var f=0;
+		//setTimeout(stopReading, timeinSecs*1000,speechRecognizer);
+		speechRecognizer.onresult = function(event){
+			//console.log(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+":"+date.getMilliseconds());
+			humanTimeEnd=window.performance.now();
+			console.log(humanTimeEnd);
+			var interimTranscripts = '';
+			for(var i = event.resultIndex; i < event.results.length; i++){
+				var transcript = event.results[i][0].transcript;
+				if(event.results[i].isFinal){
+					finalTranscripts+=transcript;
+					prevArray=finalTranscripts.trim().split(" ");
+					wordIdx=finalizeRest(prevArray,interimIdx,next,life,wordIdx,humanTimeEnd-humanTimeStart, humanIntermWords);
+					life=0;
+					next+=wordIdx;
+					interimIdx=0;
+					console.log(finalTranscripts);
+					f=1;
+					r.innerHTML+=finalTranscripts;
+					recognizedText+=finalTranscripts;
+					finalTranscripts='';
+				}else{
+					f=0;
+					interimTranscripts += transcript;
+					//console.log(transcript);
+				}
+			}
+			if(interimTranscripts!=='') console.log(interimTranscripts);
+			curArray = interimTranscripts.trim().split(" ");
+			if(prevArray.length==1 && prevArray[0]==""){
+				prevArray=curArray;
+				humanTimeStart=humanTimeEnd;
+				humanIntermWords.push(curArray[curArray.length-1].replace(/[\r\n]+/g," ").replace(/[^a-z\s]/gi,"").toLowerCase().trim());
+			}
+			else if(prevArray.length==curArray.length){
+				if(prevArray[prevArray.length-1]!==curArray[curArray.length-1]) life++;
+				humanIntermWords.push(curArray[curArray.length-1].replace(/[\r\n]+/g," ").replace(/[^a-z\s]/gi,"").toLowerCase().trim());
+				prevArray=curArray;
+			}else if(prevArray.length<curArray.length){
+				wordIdx=finalizeRest(prevArray,interimIdx,next,life,wordIdx,humanTimeEnd-humanTimeStart, humanIntermWords);
+				humanIntermWords=[];
+				humanIntermWords.push(curArray[curArray.length-1].replace(/[\r\n]+/g," ").replace(/[^a-z\s]/gi,"").toLowerCase().trim());
+				humanTimeStart=humanTimeEnd;
+				life=0;
+				interimIdx=prevArray.length;
+				prevArray=curArray;
+			}
+		}
+		speechRecognizer.onend = function(curArray,interimIdx,next,life,wordIdx,f) {
+  			//console.log('Speech recognition service disconnected');
+  			if(f==0){
+  				wordIdx=finalizeRest(curArray,interimIdx,next,life,wordIdx,humanTimeEnd-humanTimeStart, humanIntermWords);
+				life=0;
+				prevArray=curArray;
+				next+=wordIdx;
+				interimIdx=0;
+				console.log("yess");
+  			}
+		}
+		speechRecognizer.onerror = function (event) {
+			r.innerHTML = 'error here!';
+		};
+	//}
+	var stopButton=document.getElementById('stopButton');
+	stopButton.addEventListener('click', function () {
+    	speechRecognizer.stop();
+  	}, false);
+}
+
+function readPassageToMe(){
+	var t=prompt('Enter the speech speed rate (in Words per minute)')/160;
+	var msg = new SpeechSynthesisUtterance();
+	msg.volume = 1; //0 to 1
+	msg.rate = 1; // 0.1 to 10
+	msg.pitch = 1; 
+	msg.rate=t;
+	msg.lang = "en-US";
+	msg.text = passageContent;
+	console.log(passageContent);
+	speechSynthesis.speak(msg); 
+	//speechSynthesis.cancel();
+}
+
+function readAlong(){
+	startSpeaking(prompt('Enter the speech speed rate (in Words per minute)')/160);
+}
+
+function sample(){
+	window.location.reload();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    background-color: #EAEDED;
+}
+.button {
+	width: 100%;
+	height: 100%;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    overflow: auto;
+    border-radius: 8px;
+    padding: 15px 31px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.button:hover {
+    background-color: #555;
+    color: white;
+}
+.header {
+	height: 5%;
+    background-color: #2196F3;
+    color: white;
+    text-align: center;
+    padding: 7px;
+}
+.passageHeader{
+	height: 10%;
+    background-color: #2196F3;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+.upload {
+	margin: 0;
+    background-color: rgb(0.6,0.2,0.2);
+    color: white;
+    text-align: center;
+    padding: 5px;
+    display: block;
+}
+.footer {
+	margin-top: 5px;
+    background-color: #00ffff;
+    color: white;
+    padding: 5px;
+}
+.column {
+	height: 75%;
+    float: right;
+    padding-right: 3%;
+}
+.clearfix::after {
+	margin: 20px 20px 20px 5px;
+    content: "";
+    clear: both;
+    display: table;
+}
+.sidemenu {
+    width: 20%;
+}
+.content {
+	margin: 30px;
+	margin-bottom: 0px;
+	overflow: auto;
+	display: block;
+	width: 75%;
+	border: 1px solid red;
+	background-color: #D7DBDD;
+
+	height: 380px;
+}
+.sidemenu ul {
+    list-style-type: none;
+    height: 80px;
+}
+.sidemenu li a {
+    margin-bottom: 4px;
+    height: 50px;
+    color: red;
+    display: block;
+    padding: 8px;
+    background-color: #ff9933;
+    text-decoration: solid;
+}
+.sidemenu li a:hover {
+    background-color: #555;
+    color: white;
+}
+.sidemenu li a.active {
+    background-color: #008CBA;
+    color: white;
+}
+.passage {
+	margin-top: 10px;
+	margin-left: 10px;
+	text-align: justify;
+}
+.result{
+	margin-left: 10px;
+	text-align: justify;
+}
+.form-popup {
+  display: none;
+}
+
+.dropbtn {
+  height: 30px;
+  background-color: #3498DB;
+  color: white;
+  padding: 6px;
+  font-size: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+  background-color: #2980B9;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: relative;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content p {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.dropdown-content div {
+  text-align: left;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+
+.studentdetails {
+	float: left;
+	margin: 0;
+}
+.gap {
+	height: 1%;
+    background-color: #2196F3;
+    color: white;
+    text-align: center;
+    padding: 7px;
+}
+</style>
+</head>
+<body>
+<div class="header">
+	<h1> Reading Races </h1>
+</div>
+<div class="upload">
+	Select a story: 
+ 	<button onclick="showStories()" class="dropbtn">select</button>
+ 	<div id="storiesDropdown" class="dropdown-content">
+  	</div>
+</div>
+<div class="clearfix">
+	<div class="column sidemenu">
+		<ul>
+			<li><button class="button" onclick="startListening()">Start Listening</button></li>
+			<li><button class="button" onclick="startIndexing()">Create Reference File</button></li>
+			<li><a download="info.txt" class="button" id="downloadlink" style="display: none;background-color:#4CAF50;color:white">Download File</a></li>
+		</ul>
+		
+	</div>
+	<div class="column content">
+		<h3> Title : </h3>
+		<div class="passage" id="curTitle"> </div>
+		<h3> Passage : </h3>
+		<div class="passage" id="passage"> </div>
+		<h4> Recognized text :</h4>
+		<div class="result" id="result"></div>
+		<div id="cwpm"></div>
+	</div>
+</div>
+<div class="footer">
+	<a href="orfAdminMenu.html">Go back</a>
+</div>
+<div id="result"></div>
+<script>
+// This includes the timed reading and the reference input for making the decision.
+
+//DB details
+var storiesDB='readingRacesDB';
+var studentsDB='readingRacesstudentsDB';
+var DBVERSION=1;
+var storiesTABLE="stories";
+var studentsTABLE="students";
+
+var simulatedtime=[],simulatedInterim=[];
+var standardReadings=[];
+var passageContentArray;
+var recordedlines="";
+var timeinSecs=10;	
+var recognizedText='';
+var ending;
+var normFactor=1;
+var threshold=1.5; // eng: 1.5, spanish: 1.8
+var humanSmin=-2,humanSmax=4,recSmin=-5,recSmax=4,timeDiffMin=-505.28,timeDiffMax=510.48;
+var referenceObject = {};
+var standardReadings = [];
+referenceObject.standardReadings = standardReadings;
+
+function getRef() {
+var textFile = null;
+  makeTextFile = function (data) {
+  	var jsonData = JSON.stringify(data);
+  	var data = new Blob([jsonData], {type: 'text/plain'});
+    //var data = new Blob([text], {type: 'text/plain'});
+
+    // If we are replacing a previously generated file we need to
+    // manually revoke the object URL to avoid memory leaks.
+    if (textFile !== null) {
+      window.URL.revokeObjectURL(textFile);
+    }
+
+    textFile = window.URL.createObjectURL(data);
+
+    return textFile;
+  };
+  var link = document.getElementById('downloadlink');
+  link.href = makeTextFile(referenceObject);
+  link.style.display = 'block';
+};
+
+function addData(db,dbversion,curtable){
+	var key = document.getElementById("curTitle").innerHTML;
+	var value = document.getElementById("passage").innerHTML;
+    var transaction = db.transaction(curtable, "readwrite");
+    var objectStore = transaction.objectStore(curtable);
+    var reffile= JSON.stringify(referenceObject);
+    var addReq = objectStore.put({title:key,content:value,reff:reffile});
+    addReq.onerror = function(e) {
+      console.log('error storing data');
+      console.error(e);
+      alert("Error adding Story. Please try again!");
+    }
+    addReq.onsuccess = function(e) {
+      console.log('data stored');
+      alert("Reference added!");
+    }
+}
+
+function startIndexing() {
+	var simulatedIdx=0,prev=-1,sprev=-1,sdone=0;
+	var scount=0,stime=0;
+	var simulatedIntermWords=new Set();
+	var newSimulatedIntermWords=new Set();
+	var ScountV=0;
+	for (var k = 0; k<passageContentArray.length ; k++) {
+		var standardReading = {
+			"word" : passageContentArray[k],
+			"steps": "0",
+			"recTime": "0",
+			"recWords":[]
+		};
+	    var diff;
+	    console.log("new");
+	    for (var i = simulatedIdx; i < simulatedInterim.length; i++) {
+    		var swords=simulatedInterim[i].split(" ");
+    		scount++;
+    		if(sprev==-1){
+    			sprev=swords.length;
+    			stime=simulatedtime[i];
+    			simulatedIntermWords.add(swords[swords.length-1].replace(/[\r\n]+/g," ").replace(/[^a-z\s]/gi,"").toLowerCase().trim());
+    			console.log(swords[swords.length-1].replace(/[\r\n]+/g," ").replace(/[^a-z\s]/gi,"").toLowerCase().trim());
+    		}else{
+    			if(swords.length>sdone+1){
+    				newSimulatedIntermWords.add(swords[swords.length-1].replace(/[\r\n]+/g," ").replace(/[^a-z\s]/gi,"").toLowerCase().trim());
+    				console.log(swords[swords.length-1].replace(/[\r\n]+/g," ").replace(/[^a-z\s]/gi,"").toLowerCase().trim());
+    				sdone++;
+    				simulatedIdx=i+1;
+    				sprev=swords.length;
+    				diff=(simulatedtime[i]-stime)*normFactor;
+    				stime=simulatedtime[i];
+    				ScountV=scount;
+    				scount=1;
+    				break;
+    			}
+    			else{
+    				var tempword=swords[swords.length-1].replace(/[\r\n]+/g," ").replace(/[^a-z\s]/gi,"").toLowerCase().trim();
+    				simulatedIntermWords.add(tempword);
+    			}
+    			sprev=swords.length;
+    		}
+    	}
+    	if(k==passageContentArray.length-1){
+    		diff=(simulatedtime[simulatedtime.length-1]-stime)*normFactor;
+    	}
+    	diff=simulatedtime[k];
+    	standardReading.steps = ScountV-1;
+    	standardReading.recTime = diff.toFixed(2);
+    	standardReading.recWords = Array.from(simulatedIntermWords);
+    	referenceObject.standardReadings.push(standardReading);
+    	simulatedIntermWords=newSimulatedIntermWords;
+    	newSimulatedIntermWords=new Set();
+	}
+	ending=passageContentArray.length;
+	let request = indexedDB.open(storiesDB, DBVERSION);
+
+    request.onerror = function(e) {
+      console.error('Unable to open database.');
+    }
+
+    request.onsuccess = function(e) {
+      db = e.target.result;
+      console.log('db opened');
+      addData(db,DBVERSION,storiesTABLE);
+    }
+}
+function vowelsCount(word){
+	var vowels=0;
+	for(var i=0;i<word.length;i++){
+		var c=word.charAt(i);
+		if(c=='a' ||c=='e' ||c=='i' ||c=='o' ||c=='u'){
+			vowels++;
+		}
+	}
+	return vowels;
+}
+function compareResult(prevArray,curArray){
+	var min = Math.min(prevArray.length,curArray.length);
+	//if(min==0) return -1;
+	for(var i=0;i<min;i++){
+		if(prevArray[i]!=curArray[i]){
+			return i;
+		}
+	}
+	return -1;
+}
+function startListening(){
+	var r = document.getElementById('result');
+	//var simulatedInterim=[],simulatedtime=[];
+	var timeEnd=0,timeStart=0;
+	if('webkitSpeechRecognition' in window){
+		var speechRecognizer = new webkitSpeechRecognition();
+		speechRecognizer.continuous = true;
+		speechRecognizer.interimResults = true;
+		//speechRecognizer.lang = 'es-ES';
+		speechRecognizer.lang = 'en-US';
+		speechRecognizer.start();
+		var finalTranscripts = '';
+		//timeStart=window.performance.now();
+		speechRecognizer.onresult = function(event){
+			if(timeStart==0) timeStart=window.performance.now();
+			var interimTranscripts = '';
+			for(var i = event.resultIndex; i < event.results.length; i++){
+				var transcript = event.results[i][0].transcript;
+				if(event.results[i].isFinal){
+					finalTranscripts+=transcript;
+					r.innerHTML+=finalTranscripts;
+					finalTranscripts='';
+				}else{
+					interimTranscripts += transcript;
+				}
+			}
+			if(interimTranscripts!==''){
+				simulatedInterim.push(interimTranscripts);
+				timeEnd=window.performance.now();
+				simulatedtime.push(timeEnd-timeStart);
+				timeStart=timeEnd;
+			}
+		}
+		speechRecognizer.onerror = function (event) {
+			r.innerHTML = 'error here!';
+		};
+	}
+}
+
+//stories start
+function showStories(){
+	document.getElementById("storiesDropdown").classList.toggle("show");
+	getStoriesList(storiesDB, DBVERSION, storiesTABLE,displayStoriesList);
+}
+function getStoriesList(db, dbversion, table,callback) {
+  let request = indexedDB.open(db, dbversion);
+  var dbcontent = {};
+    var stories = [];
+    dbcontent.stories = stories;
+    request.onerror = function(e) {
+      console.error('Unable to open database.');
+    }
+
+    request.onsuccess = function(e) {
+      var sdb = e.target.result;
+      var obj=sdb.transaction(table, "readwrite").objectStore(table);
+      console.log('db opened');
+      var req=obj.getAllKeys();
+      req.onsuccess=function(event){
+        var result=event.target.result;
+        console.log(result);
+        var count=0;
+        result.forEach(function(key){
+        count=count+1;
+        var record = {
+        "Index": count,
+        "Title": key
+        }
+        stories.push(record);
+        });
+        callback(db, dbversion, table,dbcontent);
+      };
+    }
+}
+function displayStoriesList(db, dbversion, stable,dbcontent){
+      console.log(dbcontent);
+      var stories=dbcontent.stories;
+      var table= document.getElementById("storiesDropdown");
+      var tableRows = table.getElementsByTagName('p');
+      var rowCount = tableRows.length;
+      console.log(tableRows);
+      while (table.getElementsByTagName('p').length>0) {
+          table.removeChild(table.childNodes[0]);
+          console.log(tableRows);
+      }
+      console.log(stories);
+      stories.forEach(function(entry){
+        console.log(entry);
+        var node=document.createElement('p');
+        var row=table.appendChild(node);
+        var key=entry.Title;
+        node.innerHTML = key;
+        node.onclick=function() {displaycurrentStory(db, dbversion, stable,key);};
+      });
+}
+function displaycurrentStory(db, dbversion, stdtable,key){
+  document.getElementById("storiesDropdown").classList.toggle("show");
+  let request = indexedDB.open(db, dbversion);
+  request.onsuccess = function(e) {
+    var sdb = e.target.result;
+    console.log(sdb);
+    console.log(stdtable);
+    var req=sdb.transaction(stdtable, "readwrite").objectStore(stdtable).get(key);
+    //var req=rt.get(key);
+    req.onsuccess=function(event){
+     console.log("Yess");
+     document.getElementById("curTitle").innerHTML = event.target.result.title;
+        //document.getElementById("passage").innerHTML = event.target.result.content;
+     passageContent = event.target.result.content.replace(/[\r\n]+/g," ").replace(/ +/g," ").trim();
+     passageContentArray=passageContent.split(" ");
+     document.getElementById('passage').innerHTML = passageContent;
+    };
+  }
+}
+//stories end
+</script>
+</body>
+</html>
