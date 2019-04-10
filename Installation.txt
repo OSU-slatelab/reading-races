@@ -26,4 +26,5 @@
 	3. availableStories.html
 	4. availableStudents.html
 	5. studentMenu.html
+	6. generateRefFile.html
 	
