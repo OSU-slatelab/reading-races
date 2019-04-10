@@ -112,12 +112,21 @@ a{
     </div>
     <div class="row">
       <div class="column1">
+        <h3>Reference File</h3>
+      </div>
+      <div class="column2">
+        <p class="entry" id="refFileAvailable1" style="font-size:20px"> </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="column1">
         <h3>Story Content </h3>
       </div>
       <div class="column2">
         <p class="entry" id="storyContent1" style="font-size:20px"> </p>
       </div>
     </div>
+    
   </div>
   <div class="entry" id="newRecord">
     <div class="row">
@@ -126,6 +135,14 @@ a{
       </div>
       <div class="column2">
         <textarea rows="2" cols="50" id="storyTitle2"></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div class="column1">
+        <h3>Reference File</h3>
+      </div>
+      <div class="column2">
+        <p class="entry" id="refFileAvailable2" style="font-size:20px"> </p>
       </div>
     </div>
     <div class="row">
@@ -161,6 +178,7 @@ a{
 <div class="buttons">
   <button id="myBtn" class="button" ><a style="text-decoration:none" href="addstory.html"> Add Story</a></button>
   <button id="myBtn" class="button" onclick="viewStories()">View Avalilable Stories</button>
+  <button id="myBtn" class="button"> <a style="text-decoration:none" href="generateRefFile.html">Create Reference File </a></button>
   <button id="myBtn" class="button"><a style="text-decoration:none" href="stories.html">Go Back</a></button>
 </div>
 </div>
@@ -177,8 +195,8 @@ a{
   function viewStories(){
       AWS.config.update({
         region: "us-west-2",
-        accessKeyId: "AKIAICBIT4WEFE63PC5A",
-        secretAccessKey: "poI5oKehIcgbXdQ9PgjJfF1wkFT4p71nt3tUOEz0"
+        accessKeyId: "sampleKey",
+        secretAccessKey: "sampleKey"
       });
       dynamodb = new AWS.DynamoDB();
       docClient = new AWS.DynamoDB.DocumentClient();
@@ -294,14 +312,20 @@ function getStoryContent(table, key, callback){
             console.log(JSON.stringify(err, undefined, 2));
         } else {
             console.log(data);
-            callback(data.Item.title,data.Item.content);
+            callback(data.Item);
         }
     });
 }
 
-function displayStoryCallback(title,content){
-  document.getElementById("storyTitle1").innerHTML = title;
-  document.getElementById("storyContent1").innerHTML = content;
+function displayStoryCallback(item){
+  document.getElementById("storyTitle1").innerHTML = item.title;
+  document.getElementById("storyContent1").innerHTML = item.content;
+  if(item.hasOwnProperty('reff')){
+    document.getElementById("refFileAvailable1").innerHTML = "Available";
+  }
+  else{
+    document.getElementById("refFileAvailable1").innerHTML = "Not Available";
+  }
   document.getElementById("currentStory").style.display = "block";
   document.getElementById("list").style.display = "none";
   document.getElementById("addButton").style.display = "none";
