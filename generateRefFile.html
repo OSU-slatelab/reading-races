@@ -185,9 +185,8 @@ body {
 <div class="clearfix">
 	<div class="column sidemenu">
 		<ul>
-			<li><button class="button" onclick="startListening()">Start Listening</button></li>
-			<li><button class="button" onclick="startIndexing()">Create Reference File</button></li>
-			<li><a download="info.txt" class="button" id="downloadlink" style="display: none;background-color:#4CAF50;color:white">Download File</a></li>
+			<li><button class="button" onclick="startListening()">Create Reference File</button></li>
+			<li><button class="button" onclick="startIndexing()">Save Reference File</button></li>
 		</ul>
 		
 	</div>
@@ -205,15 +204,15 @@ body {
 	<a href="orfAdminMenu.html">Go back</a>
 </div>
 <div id="result"></div>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.422.0.min.js"></script>
 <script>
 // This includes the timed reading and the reference input for making the decision.
 
 //DB details
-var storiesDB='readingRacesDB';
-var studentsDB='readingRacesstudentsDB';
-var DBVERSION=1;
 var storiesTABLE="stories";
 var studentsTABLE="students";
+var dynamodb;
+var docClient;
 
 var simulatedtime=[],simulatedInterim=[];
 var standardReadings=[];
@@ -229,44 +228,116 @@ var referenceObject = {};
 var standardReadings = [];
 referenceObject.standardReadings = standardReadings;
 
-function getRef() {
-var textFile = null;
-  makeTextFile = function (data) {
-  	var jsonData = JSON.stringify(data);
-  	var data = new Blob([jsonData], {type: 'text/plain'});
-    //var data = new Blob([text], {type: 'text/plain'});
 
-    // If we are replacing a previously generated file we need to
-    // manually revoke the object URL to avoid memory leaks.
-    if (textFile !== null) {
-      window.URL.revokeObjectURL(textFile);
-    }
-
-    textFile = window.URL.createObjectURL(data);
-
-    return textFile;
+//stories start
+function showStories(){
+  AWS.config.update({
+    region: "us-west-2",
+    accessKeyId: "AKIAICBIT4WEFE63PC5A",
+    secretAccessKey: "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"
+  });
+  dynamodb = new AWS.DynamoDB();
+  docClient = new AWS.DynamoDB.DocumentClient();
+  document.getElementById("storiesDropdown").classList.toggle("show");
+  getStoriesList(storiesTABLE,displayStoriesList);
+}
+function getStoriesList(table,callback) {
+  var dbcontent = {};
+  var stories = [];
+  dbcontent.stories = stories;
+  var params = {
+        TableName: table,
+        ProjectionExpression: "title",
   };
-  var link = document.getElementById('downloadlink');
-  link.href = makeTextFile(referenceObject);
-  link.style.display = 'block';
-};
+  docClient.scan(params, onScan);
+  function onScan(err, data) {
+    if (err) {
+      console.error(JSON.stringify(err, undefined, 2));
+    } else {
+      // Print all the stories
+      var count=0;
+      data.Items.forEach(function(data) {
+        count=count+1;
+        var story = {
+          "Index": count,
+          "Title": data.title
+        }
+        stories.push(story);
+        console.log(story);
+      });  
+      callback(dbcontent);        
+      }
+  }
+}
+function displayStoriesList(dbcontent){
+      //console.log(dbcontent);
+      var stories=dbcontent.stories;
+      var table= document.getElementById("storiesDropdown");
+      var tableRows = table.getElementsByTagName('p');
+      var rowCount = tableRows.length;
+      console.log(tableRows);
+      while (table.getElementsByTagName('p').length>0) {
+          table.removeChild(table.childNodes[0]);
+          //console.log(tableRows);
+      }
+      //console.log(stories);
+      stories.forEach(function(entry){
+        console.log(entry);
+        var node=document.createElement('p');
+        var row=table.appendChild(node);
+        var key=entry.Title;
+        node.innerHTML = key;
+        node.onclick=function() {displaycurrentStory(key,displayStoryCallback);};
+      });
+}
+function displaycurrentStory(key,callback){
+  var params = {
+        TableName: storiesTABLE,
+        Key:{
+            "title": key
+        }
+    };
+    docClient.get(params, function(err, data) {
+        if (err) {
+            console.log(JSON.stringify(err, undefined, 2));
+        } else {
+            console.log(data);
+            callback(data.Item);
+        }
+    });
+}
 
-function addData(db,dbversion,curtable){
+function displayStoryCallback(item){
+  document.getElementById("storiesDropdown").classList.toggle("show");
+  document.getElementById("curTitle").innerHTML = item.title;
+  passageContent = item.content.replace(/[\r\n]+/g," ").replace(/ +/g," ").trim();
+  passageContentArray=passageContent.split(" ");
+  document.getElementById('passage').innerHTML = passageContent;
+}
+//stories end
+
+function addData(table){
 	var key = document.getElementById("curTitle").innerHTML;
 	var value = document.getElementById("passage").innerHTML;
-    var transaction = db.transaction(curtable, "readwrite");
-    var objectStore = transaction.objectStore(curtable);
-    var reffile= JSON.stringify(referenceObject);
-    var addReq = objectStore.put({title:key,content:value,reff:reffile});
-    addReq.onerror = function(e) {
-      console.log('error storing data');
-      console.error(e);
-      alert("Error adding Story. Please try again!");
-    }
-    addReq.onsuccess = function(e) {
-      console.log('data stored');
-      alert("Reference added!");
-    }
+  var reffile= JSON.stringify(referenceObject);
+  var params = {
+        TableName :table,
+        Item:{
+            "title": key,
+            "content": value,
+            "reff": reffile
+        }
+  };
+  docClient.put(params, function(err, data) {
+        if (err) {
+            console.log('error storing data');
+            console.error(e);
+            alert("Error adding Story. Please try again!");
+        } else {
+            console.log('data stored');
+            alert("Reference added!");
+        }
+  });
 }
 
 function startIndexing() {
@@ -324,17 +395,7 @@ function startIndexing() {
     	newSimulatedIntermWords=new Set();
 	}
 	ending=passageContentArray.length;
-	let request = indexedDB.open(storiesDB, DBVERSION);
-
-    request.onerror = function(e) {
-      console.error('Unable to open database.');
-    }
-
-    request.onsuccess = function(e) {
-      db = e.target.result;
-      console.log('db opened');
-      addData(db,DBVERSION,storiesTABLE);
-    }
+	addData(storiesTABLE);
 }
 function vowelsCount(word){
 	var vowels=0;
@@ -395,82 +456,6 @@ function startListening(){
 	}
 }
 
-//stories start
-function showStories(){
-	document.getElementById("storiesDropdown").classList.toggle("show");
-	getStoriesList(storiesDB, DBVERSION, storiesTABLE,displayStoriesList);
-}
-function getStoriesList(db, dbversion, table,callback) {
-  let request = indexedDB.open(db, dbversion);
-  var dbcontent = {};
-    var stories = [];
-    dbcontent.stories = stories;
-    request.onerror = function(e) {
-      console.error('Unable to open database.');
-    }
-
-    request.onsuccess = function(e) {
-      var sdb = e.target.result;
-      var obj=sdb.transaction(table, "readwrite").objectStore(table);
-      console.log('db opened');
-      var req=obj.getAllKeys();
-      req.onsuccess=function(event){
-        var result=event.target.result;
-        console.log(result);
-        var count=0;
-        result.forEach(function(key){
-        count=count+1;
-        var record = {
-        "Index": count,
-        "Title": key
-        }
-        stories.push(record);
-        });
-        callback(db, dbversion, table,dbcontent);
-      };
-    }
-}
-function displayStoriesList(db, dbversion, stable,dbcontent){
-      console.log(dbcontent);
-      var stories=dbcontent.stories;
-      var table= document.getElementById("storiesDropdown");
-      var tableRows = table.getElementsByTagName('p');
-      var rowCount = tableRows.length;
-      console.log(tableRows);
-      while (table.getElementsByTagName('p').length>0) {
-          table.removeChild(table.childNodes[0]);
-          console.log(tableRows);
-      }
-      console.log(stories);
-      stories.forEach(function(entry){
-        console.log(entry);
-        var node=document.createElement('p');
-        var row=table.appendChild(node);
-        var key=entry.Title;
-        node.innerHTML = key;
-        node.onclick=function() {displaycurrentStory(db, dbversion, stable,key);};
-      });
-}
-function displaycurrentStory(db, dbversion, stdtable,key){
-  document.getElementById("storiesDropdown").classList.toggle("show");
-  let request = indexedDB.open(db, dbversion);
-  request.onsuccess = function(e) {
-    var sdb = e.target.result;
-    console.log(sdb);
-    console.log(stdtable);
-    var req=sdb.transaction(stdtable, "readwrite").objectStore(stdtable).get(key);
-    //var req=rt.get(key);
-    req.onsuccess=function(event){
-     console.log("Yess");
-     document.getElementById("curTitle").innerHTML = event.target.result.title;
-        //document.getElementById("passage").innerHTML = event.target.result.content;
-     passageContent = event.target.result.content.replace(/[\r\n]+/g," ").replace(/ +/g," ").trim();
-     passageContentArray=passageContent.split(" ");
-     document.getElementById('passage').innerHTML = passageContent;
-    };
-  }
-}
-//stories end
 </script>
 </body>
 </html>
