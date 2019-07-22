@@ -1,274 +1,292 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
-<head>
-<style>
-* {
-    box-sizing: border-box;
-}
-body {
-    margin: 0;
-    background-color: #EAEDED;
-}
-.header {
-	height: 5%;
-    background-color: #2196F3;
-    color: white;
-    text-align: center;
-    padding: 7px;
-}
-.column1 {
-  float: left;
-  width: 20%;
-  padding: 10px;
-  background-color: #EAEDED;
-}
-.column2 {
-  float: left;
-  width: 80%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-  background-color: #EAEDED;
-}
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-.entry{
-  float: left;
-  width: 80%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-  background-color: #EAEDED;
-}
-.buttons{
-  float: left;
-  width: 20%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-}
-.button {
-    width: 100%;
-    height: 100%;
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    overflow: auto;
-    border-radius: 8px;
-    padding: 15px 31px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-.button:hover {
-    background-color: #555;
-    color: white;
-}
-.loading {
-  z-index: 10;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 90vh;
-  display: none;
-}
-a{
-  color : white;
-}
-</style>
-</head>
-<body onload="initStudentsDb()">
-<div class="header">
-  <h1> New Student </h1>
-</div>
-<div id="actualContent">
-<div class="entry">
-    <div class="row">
-      <div class="column1">
-        <h3>Student Name</h3>
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background-color: #eaeded;
+      }
+
+      .header {
+        height: 5%;
+        background-color: #2196f3;
+        color: white;
+        text-align: center;
+        padding: 7px;
+      }
+
+      .column1 {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        background-color: #eaeded;
+      }
+
+      .column2 {
+        float: left;
+        width: 80%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+        background-color: #eaeded;
+      }
+
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+      .entry {
+        float: left;
+        width: 80%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+        background-color: #eaeded;
+      }
+
+      .buttons {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+      }
+
+      .button {
+        width: 100%;
+        height: 100%;
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        overflow: auto;
+        border-radius: 8px;
+        padding: 15px 31px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background-color: #555;
+        color: white;
+      }
+
+      .loading {
+        z-index: 10;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 90vh;
+        display: none;
+      }
+
+      a {
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body onload="initStudentsDb()">
+    <div class="header">
+      <h1>New Student</h1>
+    </div>
+    <div id="actualContent">
+      <div class="entry">
+        <div class="row">
+          <div class="column1">
+            <h3>Student Name</h3>
+          </div>
+          <div class="column2">
+            <textarea rows="2" cols="50" id="studentName"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Grade</h3>
+          </div>
+          <div class="column2">
+            <textarea rows="2" cols="20" id="grade"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Reading Rate (WPM)</h3>
+          </div>
+          <div class="column2">
+            <input id="wpm" type="number" name="quantity" min="40" max="120" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Words per minute Goal</h3>
+          </div>
+          <div class="column2">
+            <input
+              id="wpmGoal"
+              type="number"
+              name="quantity"
+              min="40"
+              max="120"
+            />
+          </div>
+        </div>
       </div>
-      <div class="column2">
-        <textarea rows="2" cols="50" id="studentName"></textarea>
+      <div class="buttons">
+        <button id="myBtn" class="button" onclick="clearText()">
+          Clear Text
+        </button>
+      </div>
+      <div class="buttons">
+        <button id="myBtn" class="button" onclick="addStudent()">
+          Save Student
+        </button>
+      </div>
+      <div class="buttons">
+        <button id="myBtn" class="button">
+          <a style="text-decoration:none" href="availableStudents.html"
+            >View Students List</a
+          >
+        </button>
+      </div>
+      <div class="buttons">
+        <button id="myBtn" class="button">
+          <a style="text-decoration:none" href="stories.html">Go Back</a>
+        </button>
       </div>
     </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Grade</h3>
-      </div>
-      <div class="column2">
-        <textarea rows="2" cols="20" id="grade"></textarea>
-      </div>
+    <div id="load" class="loading">
+      <h2>Please wait while the database is updated</h2>
     </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Reading Rate (WPM)</h3>
-      </div>
-      <div class="column2">
-        <input id="wpm" type="number" name="quantity" min="40" max="120">
-      </div>
-    </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Words per minute Goal </h3>
-      </div>
-      <div class="column2">
-        <input id="wpmGoal" type="number" name="quantity" min="40" max="120">
-      </div>
-    </div>
-</div>
-<div class="buttons">
-  <button id="myBtn" class="button" onclick="clearText()">Clear Text</button>
-</div>
-<div class="buttons">
-  <button id="myBtn" class="button" onclick="addStudent()">Save Student</button>
-</div>
-<div class="buttons">
-  <button id="myBtn" class="button"><a style="text-decoration:none" href="availableStudents.html">View Students List</a></button>
-</div>
-<div class="buttons">
-  <button id="myBtn" class="button"><a style="text-decoration:none" href="stories.html">Go Back</a></button>
-</div>
-</div>
-<div id="load" class="loading">
-  <h2>Please wait while the database is updated</h2>
-</div>
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.422.0.min.js"></script>
-<script>
-var storiesTABLE="stories";
-var studentsTABLE="students";
-
-
-var dynamodb;
-var docClient;
-
-//to clear off the existing text
-function clearText() {
-    document.getElementById("studentName").value = '';
-    document.getElementById("grade").value = '';
-    document.getElementById("wpm").value = '';
-    document.getElementById("wpmGoal").value = '';
-}
-
-//to initialize the database 
-function initStudentsDb(){
-    AWS.config.update({
-      region: "us-west-2",
-      accessKeyId: "AKIAICBIT4WEFE63PC5A",
-      secretAccessKey: "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"
-    });
-    var stuParams = {
-        TableName : studentsTABLE,
-        KeySchema: [
-            { AttributeName: "name", KeyType: "HASH"},
-        ],
-        AttributeDefinitions: [
-            { AttributeName: "name", AttributeType: "S" },
-        ],
-        ProvisionedThroughput: {
-            ReadCapacityUnits: 500,
-            WriteCapacityUnits: 500
-        }
-    };
-    dynamodb = new AWS.DynamoDB();
-    docClient = new AWS.DynamoDB.DocumentClient();
-    dynamodb.createTable(stuParams, function(err, data) {
-        if (err) {
-            console.log(JSON.stringify(err, undefined, 2));
-        } else {
-          console.log(data);
-            console.log(JSON.stringify(data, undefined, 2));
-        }
-    });
-}
-
-//to add the student to the database
-function addStudent(){
-    var name = document.getElementById("studentName").value.trim();
-    if(name == ''){
-      alert("Please enter the student name");
-      return;
-    }
-    var grade = document.getElementById("grade").value.trim();
-    var db; 
-    if(grade == ''){
-      alert("Please enter the student grade");
-      return;
-    }
-    var wpm = document.getElementById("wpm").value;
-    if(wpm == ''){
-      alert("Please enter the student's current Words per minute");
-      return;
-    }
-    var wpmGoal = document.getElementById("wpmGoal").value;
-    if(wpmGoal == ''){
-      alert("Please enter the student's Words per minute Goal");
-      return;
-    }
-    document.getElementById("actualContent").style.display = "none";
-    document.getElementById("load").style.display = "block";
-    addData(studentsTABLE,name,grade,wpm,wpmGoal);
-}
-
-//to add the data to the database
-function addData(table,name1,grade1,wpm1,wpmGoal1){
-    var params = {
-        TableName :table,
-        Item:{
-            "name": name1,
-            "grade": grade1,
-            "wpm": wpm1,
-            "wpmGoal": wpmGoal1
-        }
-    };
-    docClient.put(params, function(err, data) {
-        if (err) {
-            console.log('error storing data');
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.422.0.min.js"></script>
+    <script>
+      var storiesTABLE = "stories";
+      var studentsTABLE = "students";
+      var dynamodb;
+      var docClient;
+      //to clear off the existing text
+      function clearText() {
+        document.getElementById("studentName").value = "";
+        document.getElementById("grade").value = "";
+        document.getElementById("wpm").value = "";
+        document.getElementById("wpmGoal").value = "";
+      }
+      //to initialize the database
+      function initStudentsDb() {
+        AWS.config.update({
+          region: "us-west-2",
+          accessKeyId: "AKIATXEHTWCA5O2HISEX",
+          secretAccessKey: "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"
+        });
+        var stuParams = {
+          TableName: studentsTABLE,
+          KeySchema: [
+            {
+              AttributeName: "name",
+              KeyType: "HASH"
+            }
+          ],
+          AttributeDefinitions: [
+            {
+              AttributeName: "name",
+              AttributeType: "S"
+            }
+          ],
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1
+          }
+        };
+        dynamodb = new AWS.DynamoDB();
+        docClient = new AWS.DynamoDB.DocumentClient();
+        dynamodb.createTable(stuParams, function(err, data) {
+          if (err) {
             console.error(JSON.stringify(err, undefined, 2));
+          }
+        });
+      }
+      //to add the student to the database
+      function addStudent() {
+        var name = document.getElementById("studentName").value.trim();
+        if (name == "") {
+          alert("Please enter the student name");
+          return;
+        }
+        var grade = document.getElementById("grade").value.trim();
+        var db;
+        if (grade == "") {
+          alert("Please enter the student grade");
+          return;
+        }
+        var wpm = document.getElementById("wpm").value;
+        if (wpm == "") {
+          alert("Please enter the student's current Words per minute");
+          return;
+        }
+        var wpmGoal = document.getElementById("wpmGoal").value;
+        if (wpmGoal == "") {
+          alert("Please enter the student's Words per minute Goal");
+          return;
+        }
+        document.getElementById("actualContent").style.display = "none";
+        document.getElementById("load").style.display = "block";
+        addData(studentsTABLE, name, grade, wpm, wpmGoal);
+      }
+      //to add the data to the database
+      function addData(table, name1, grade1, wpm1, wpmGoal1) {
+        var params = {
+          TableName: table,
+          Item: {
+            name: name1,
+            grade: grade1,
+            wpm: wpm1,
+            wpmGoal: wpmGoal1
+          }
+        };
+        docClient.put(params, function(err, data) {
+          if (err) {
+            console.error(
+              "error storing data: " + JSON.stringify(err, undefined, 2)
+            );
             alert("Error adding Story. Please try again!");
             document.getElementById("actualContent").style.display = "block";
-            document.getElementById("load").style.display = "none"; 
-        } else {
-            console.log('data stored');
-            console.log(JSON.stringify(data, undefined, 2));
+            document.getElementById("load").style.display = "none";
+          } else {
             document.getElementById("actualContent").style.display = "block";
             document.getElementById("load").style.display = "none";
             goback();
             alert("Student Record added!");
-        }
-    });
-}
+          }
+        });
+      }
+      //to view the available student details
+      function viewStudents() {
+        var params = {
+          TableName: studentsTABLE,
+          ProjectionExpression: "#nm, grade, wpm, wpmGoal",
+          ExpressionAttributeNames: {
+            "#nm": "name"
+          }
+        };
+        docClient.scan(params, onScan);
 
-//to view the available student details
-function viewStudents(){
-    var params = {
-        TableName: studentsTABLE,
-        ProjectionExpression: "#nm, grade, wpm, wpmGoal",
-        ExpressionAttributeNames: {
-            "#nm": "name",
-        },
-    };
-    docClient.scan(params, onScan);
-
-    function onScan(err, data) {
-        if (err) {
+        function onScan(err, data) {
+          if (err) {
             console.error(JSON.stringify(err, undefined, 2));
-        } else {
-            // Print all the movies
-            data.Items.forEach(function(student) {
-                console.log(student.name + ": " + student.grade + ": " + student.wpm + ": " + student.wpmGoal);
-            });          
+          }
         }
-    }
-}
+      }
 
-function goback(){
-  window.location.href = "availableStudents.html";
-}
-</script>
-</body>
+      function goback() {
+        window.location.href = "availableStudents.html";
+      }
+    </script>
+  </body>
 </html>

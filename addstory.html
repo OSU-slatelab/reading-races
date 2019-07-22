@@ -1,219 +1,242 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
-<head>
-<style>
-* {
-    box-sizing: border-box;
-}
-body {
-    margin: 0;
-    background-color: #EAEDED;
-}
-.header {
-	height: 5%;
-    background-color: #2196F3;
-    color: white;
-    text-align: center;
-    padding: 7px;
-}
-.column1 {
-  float: left;
-  width: 20%;
-  padding: 10px;
-  background-color: #EAEDED;
-}
-.column2 {
-  float: left;
-  width: 80%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-  background-color: #EAEDED;
-}
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-.entry{
-  float: left;
-  width: 80%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-  background-color: #EAEDED;
-}
-.buttons{
-  float: left;
-  width: 20%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-}
-.button {
-    width: 100%;
-    height: 100%;
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    overflow: auto;
-    border-radius: 8px;
-    padding: 15px 31px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-.button:hover {
-    background-color: #555;
-    color: white;
-}
-.loading {
-  z-index: 10;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 90vh;
-  display: none;
-}
-a{
-  color : white;
-}
-</style>
-</head>
-<body onload="initStoriesDb()">
-<div class="header">
-  <h1> New Story </h1>
-</div>
-<div id="actualContent">
-<div class="entry">
-    <div class="row">
-      <div class="column1">
-        <h3>Story Title</h3>
-      </div>
-      <div class="column2">
-        <textarea rows="2" cols="50" id="storyTitle"></textarea>
-        <h3></h3>
-      </div>
-    </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Story Content</h3>
-      </div>
-      <div class="column2">
-        <textarea rows="18" cols="100" id="storyContent">Enter Story here...</textarea>
-      </div>
-    </div>
-</div>
-<div class="buttons">
-  <button id="myBtn" class="button" onclick="clearText()">Clear Text</button>
-</div>
-<div class="buttons">
-  <button id="myBtn" class="button" onclick="addStory()">Save Story</button>
-</div>
-<div class="buttons">
-  <button id="displaylist" class="button"><a style="text-decoration:none" href="availableStories.html">View Avalilable Stories</a></button>
-</div>
-<div class="buttons">
-  <button id="closebtn" class="button"><a style="text-decoration:none" href="stories.html">Go Back</a></button>
-</div>
-</div>
-<div id="load" class="loading">
-  <h2>Please wait while the database is updated</h2>
-</div>
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.422.0.min.js"></script>
-<script>
-var storiesTABLE="stories";
-var studentsTABLE="students";
-var dynamodb;
-var docClient;
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-//To initialize the database by creating schema if it does not exit
-function initStoriesDb(){
-    AWS.config.update({
-      region: "us-west-2",
-      accessKeyId: "AKIAICBIT4WEFE63PC5A",
-      secretAccessKey: "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"
-    });
-    var stoParams = {
-        TableName : storiesTABLE,
-        KeySchema: [
-            { AttributeName: "title", KeyType: "HASH"},
-        ],
-        AttributeDefinitions: [
-            { AttributeName: "title", AttributeType: "S" },
-        ],
-        ProvisionedThroughput: {
-            ReadCapacityUnits: 500,
-            WriteCapacityUnits: 500
-        }
-    };
-    dynamodb = new AWS.DynamoDB();
-    docClient = new AWS.DynamoDB.DocumentClient();
-    dynamodb.createTable(stoParams, function(err, data) {
-        if (err) {
+      body {
+        margin: 0;
+        background-color: #eaeded;
+      }
+
+      .header {
+        height: 5%;
+        background-color: #2196f3;
+        color: white;
+        text-align: center;
+        padding: 7px;
+      }
+
+      .column1 {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        background-color: #eaeded;
+      }
+
+      .column2 {
+        float: left;
+        width: 80%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+        background-color: #eaeded;
+      }
+
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+      .entry {
+        float: left;
+        width: 80%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+        background-color: #eaeded;
+      }
+
+      .buttons {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+      }
+
+      .button {
+        width: 100%;
+        height: 100%;
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        overflow: auto;
+        border-radius: 8px;
+        padding: 15px 31px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background-color: #555;
+        color: white;
+      }
+
+      .loading {
+        z-index: 10;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 90vh;
+        display: none;
+      }
+
+      a {
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body onload="initStoriesDb()">
+    <div class="header">
+      <h1>New Story</h1>
+    </div>
+    <div id="actualContent">
+      <div class="entry">
+        <div class="row">
+          <div class="column1">
+            <h3>Story Title</h3>
+          </div>
+          <div class="column2">
+            <textarea rows="2" cols="50" id="storyTitle"></textarea>
+            <h3></h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Story Content</h3>
+          </div>
+          <div class="column2">
+            <textarea rows="18" cols="100" id="storyContent">
+Enter Story here...</textarea
+            >
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="clearButton" class="button" onclick="clearText()">
+          Clear Text
+        </button>
+      </div>
+      <div class="buttons">
+        <button id="addStoryButton" class="button" onclick="addStory()">
+          Save Story
+        </button>
+      </div>
+      <div class="buttons">
+        <button id="displaylist" class="button">
+          <a style="text-decoration:none" href="availableStories.html"
+            >View Avalilable Stories</a
+          >
+        </button>
+      </div>
+      <div class="buttons">
+        <button id="closebtn" class="button">
+          <a style="text-decoration:none" href="stories.html">Go Back</a>
+        </button>
+      </div>
+    </div>
+    <div id="load" class="loading">
+      <h2>Please wait while the database is updated</h2>
+    </div>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.422.0.min.js"></script>
+    <script>
+      var storiesTABLE = "stories";
+      var studentsTABLE = "students";
+      var dynamodb;
+      var docClient;
+      //To initialize the database by creating schema if it does not exit
+      function initStoriesDb() {
+        AWS.config.update({
+          region: "us-west-2",
+          accessKeyId: "AKIATXEHTWCA5O2HISEX",
+          secretAccessKey: "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"
+        });
+        var stoParams = {
+          TableName: storiesTABLE,
+          KeySchema: [
+            {
+              AttributeName: "title",
+              KeyType: "HASH"
+            }
+          ],
+          AttributeDefinitions: [
+            {
+              AttributeName: "title",
+              AttributeType: "S"
+            }
+          ],
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1
+          }
+        };
+        dynamodb = new AWS.DynamoDB();
+        docClient = new AWS.DynamoDB.DocumentClient();
+        dynamodb.createTable(stoParams, function(err, data) {
+          if (err) {
             console.log(JSON.stringify(err, undefined, 2));
-        } else {
-            console.log(data);
-            console.log(JSON.stringify(data, undefined, 2));
+          }
+        });
+      }
+      //To clear off the text
+      function clearText() {
+        document.getElementById("storyTitle").value = "";
+        document.getElementById("storyContent").value = "";
+      }
+      //to add the story to the database
+      function addStory() {
+        var title = document.getElementById("storyTitle").value.trim();
+        if (title == "") {
+          alert("Please enter the story title");
+          return;
         }
-    });
-}
-
-//To clear off the text
-function clearText() {
-    document.getElementById("storyTitle").value = '';
-    document.getElementById("storyContent").value = '';
-}
-
-//to add the story to the database
-function addStory(){
-    var title = document.getElementById("storyTitle").value.trim();
-    if(title == ''){
-      alert("Please enter the story title");
-      return;
-    }
-    var content = document.getElementById("storyContent").value.trim();
-    if(content == ''){
-      alert("Please enter the story content");
-      return;
-    }
-    document.getElementById("actualContent").style.display = "none";
-    document.getElementById("load").style.display = "block";
-    addData(storiesTABLE,title,content);
-}
-
-//to add the data to the database
-function addData(table,key,value){
-    var params = {
-        TableName :table,
-        Item:{
-            "title": key,
-            "content": value
+        var content = document.getElementById("storyContent").value.trim();
+        if (content == "") {
+          alert("Please enter the story content");
+          return;
         }
-    };
-    docClient.put(params, function(err, data) {
-        if (err) {
-            console.log('error storing data');
-            console.error(JSON.stringify(err, undefined, 2));
+        document.getElementById("actualContent").style.display = "none";
+        document.getElementById("load").style.display = "block";
+        addData(storiesTABLE, title, content);
+      }
+      //to add the data to the database
+      function addData(table, key, value) {
+        var params = {
+          TableName: table,
+          Item: {
+            title: key,
+            content: value
+          }
+        };
+        docClient.put(params, function(err, data) {
+          if (err) {
+            console.log();
+            console.error(
+              "error storing data: " + JSON.stringify(err, undefined, 2)
+            );
             alert("Error adding Story. Please try again!");
             document.getElementById("actualContent").style.display = "block";
-            document.getElementById("load").style.display = "none"; 
-        } else {
-            console.log('data stored');
-            console.log(JSON.stringify(data, undefined, 2));
+            document.getElementById("load").style.display = "none";
+          } else {
             document.getElementById("actualContent").style.display = "block";
             document.getElementById("load").style.display = "none";
-            goback();
-            alert("Story added!");
-        }
-    });
-}
+            //goback(); // commented out for mass adding purposes
+            //alert("Story added!");
+          }
+        });
+      }
 
-function goback(){
-  window.location.href = "availableStories.html";
-}
-</script>
-</body>
+      function goback() {
+        window.location.href = "availableStories.html";
+      }
+    </script>
+  </body>
 </html>

@@ -1,397 +1,460 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
-<head>
-<style>
-* {
-    box-sizing: border-box;
-}
-body {
-    margin: 0;
-    background-color: #EAEDED;
-}
-.header {
-    margin: 0;
-	  height: 5%;
-    background-color: #2196F3;
-    color: white;
-    text-align: center; 
-    padding: 7px;
-}
-table, th, td {
-    height: 30px;
-    border: 1px solid black;
-    text-align: center;
-    border-collapse: collapse;
-    background-color: #A9CCE3 ;
-}
-th{
-  background-color: #82E0AA;
-}
-.column1 {
-  float: left;
-  width: 20%;
-  padding: 10px;
-  background-color: #EAEDED;
-}
-.column2 {
-  float: left;
-  width: 80%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-  background-color: #EAEDED;
-}
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-.entry{
-  float: left;
-  width: 80%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-  background-color: #EAEDED;
-}
-.buttons{
-  float: right;
-  width: 20%;
-  padding: 10px;
-  margin: 20px 0px 0px 0px;
-}
-.button {
-    width: 100%;
-    height: 100%;
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    overflow: auto;
-    border-radius: 8px;
-    padding: 15px 31px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-.button:hover {
-    background-color: #555;
-    color: white;
-}
-.edit{
-  display: none;
-}
-.close{
-  bottom: 0;
-  right: 0;
-  height: 10%;
-  width: 10%;
-  background-color: #4CAF50;
-  border: 3px solid #f1f1f1;
-}
-/* The popup form - hidden by default */
-.form-popup {
-  display: none;
-}
-a{
-  color : white;
-}
-</style>
-</head>
-<body onload="viewStudents()">
-<div class="form-popup" id="currentStudent">
-  <h1 class="header"> Student Details </h1>
-  <div class="entry" id="curRecord">
-    <div class="row">
-      <div class="column1">
-        <h3>Student Name</h3>
-      </div>
-      <div class="column2">
-        <p class="entry" id="studentName1" style="font-size:20px"> </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Grade</h3>
-      </div>
-      <div class="column2">
-        <p class="entry" id="grade1" style="font-size:20px"> </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Reading Rate (WPM)</h3>
-      </div>
-      <div class="column2">
-        <p class="entry" id="wpm1" style="font-size:20px"> </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Words per minute Goal </h3>
-      </div>
-      <div class="column2">
-        <p class="entry" id="wpmGoal1" style="font-size:20px"> </p>
-      </div>
-    </div>
-  </div>
-  <div class="entry" id="newRecord">
-    <div class="row">
-      <div class="column1">
-        <h3>Student Name</h3>
-      </div>
-      <div class="column2">
-        <textarea rows="2" cols="50" id="studentName2"></textarea>
-      </div>
-    </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Grade</h3>
-      </div>
-      <div class="column2">
-        <textarea rows="2" cols="20" id="grade2"></textarea>
-      </div>
-    </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Reading Rate (WPM)</h3>
-      </div>
-      <div class="column2">
-        <input id="wpm2" type="number" name="quantity" min="40" max="120">
-      </div>
-    </div>
-    <div class="row">
-      <div class="column1">
-        <h3>Words per minute Goal </h3>
-      </div>
-      <div class="column2">
-        <input id="wpmGoal2" type="number" name="quantity" min="40" max="120">
-      </div>
-    </div>
-</div>
-  <div class="buttons">
-    <button id="editButton" class="button" onclick="editRecord()"> Edit Student Record</button>
-    <button id="addButton" class="button" onclick="addEditedRecord()"> Save Student Record</button>
-    <button class="button" onclick="closeRecord()"> Close Record</button>
-  </div>
-</div>
-<div id="list">
-<div class="header">
-  <h1> Available Students </h1>
-</div>
-<div class="entry">
-    <table id="studentsList" border="1">
-      <tr>
-        <th style="width:10%"> Index </th>
-        <th style="width:30%"> Name </th>
-        <th style="width:20%"></th>
-        <th style="width:20%"></th>
-      </tr>
-    </table>
-</div>
-<p id="demo"></p>
-<div class="buttons">
-  <button id="myBtn" class="button" ><a style="text-decoration:none" href="addstudent.html"> Add Student Record</a></button>
-  <button id="myBtn" class="button" onclick="viewStudents()">View Avalilable Students</button>
-  <button id="myBtn" class="button"><a style="text-decoration:none" href="students.html">Go Back</a></button>
-</div>
-</div>
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.422.0.min.js"></script>
-<script>
-//to get the available students list
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-  var storiesTABLE="stories";
-  var studentsTABLE="students";
-  var dynamodb;
-  var docClient;
-  var currentKey;
-  function viewStudents(){
-      AWS.config.update({
-        region: "us-west-2",
-        accessKeyId: "AKIAICBIT4WEFE63PC5A",
-        secretAccessKey: "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"
-      });
-      dynamodb = new AWS.DynamoDB();
-      docClient = new AWS.DynamoDB.DocumentClient();
-      getStudentsList(studentsTABLE,displayStudentsList);
-  }
-  function displayStudentsList(dbcontent){
-      console.log(dbcontent);
-      var students=dbcontent.students;
-      var table= document.getElementById("studentsList");
-      var tableRows = table.getElementsByTagName('tr');
-      var rowCount = tableRows.length;
-      console.log(tableRows);
-      while (table.getElementsByTagName('tr').length>1) {
+      body {
+        margin: 0;
+        background-color: #eaeded;
+      }
+
+      .header {
+        margin: 0;
+        height: 5%;
+        background-color: #2196f3;
+        color: white;
+        text-align: center;
+        padding: 7px;
+      }
+
+      table,
+      th,
+      td {
+        height: 30px;
+        border: 1px solid black;
+        text-align: center;
+        border-collapse: collapse;
+        background-color: #a9cce3;
+      }
+
+      th {
+        background-color: #82e0aa;
+      }
+
+      .column1 {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        background-color: #eaeded;
+      }
+
+      .column2 {
+        float: left;
+        width: 80%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+        background-color: #eaeded;
+      }
+
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+      .entry {
+        float: left;
+        width: 80%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+        background-color: #eaeded;
+      }
+
+      .buttons {
+        float: right;
+        width: 20%;
+        padding: 10px;
+        margin: 20px 0px 0px 0px;
+      }
+
+      .button {
+        width: 100%;
+        height: 100%;
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        overflow: auto;
+        border-radius: 8px;
+        padding: 15px 31px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background-color: #555;
+        color: white;
+      }
+
+      .edit {
+        display: none;
+      }
+
+      .close {
+        bottom: 0;
+        right: 0;
+        height: 10%;
+        width: 10%;
+        background-color: #4caf50;
+        border: 3px solid #f1f1f1;
+      }
+
+      /* The popup form - hidden by default */
+      .form-popup {
+        display: none;
+      }
+
+      a {
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body onload="viewStudents()">
+    <div class="form-popup" id="currentStudent">
+      <h1 class="header">Student Details</h1>
+      <div class="entry" id="curRecord">
+        <div class="row">
+          <div class="column1">
+            <h3>Student Name</h3>
+          </div>
+          <div class="column2">
+            <p class="entry" id="studentName1" style="font-size:20px"></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Grade</h3>
+          </div>
+          <div class="column2">
+            <p class="entry" id="grade1" style="font-size:20px"></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Reading Rate (WPM)</h3>
+          </div>
+          <div class="column2">
+            <p class="entry" id="wpm1" style="font-size:20px"></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Words per minute Goal</h3>
+          </div>
+          <div class="column2">
+            <p class="entry" id="wpmGoal1" style="font-size:20px"></p>
+          </div>
+        </div>
+      </div>
+      <div class="entry" id="newRecord">
+        <div class="row">
+          <div class="column1">
+            <h3>Student Name</h3>
+          </div>
+          <div class="column2">
+            <textarea rows="2" cols="50" id="studentName2"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Grade</h3>
+          </div>
+          <div class="column2">
+            <textarea rows="2" cols="20" id="grade2"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Reading Rate (WPM)</h3>
+          </div>
+          <div class="column2">
+            <input id="wpm2" type="number" name="quantity" min="40" max="120" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="column1">
+            <h3>Words per minute Goal</h3>
+          </div>
+          <div class="column2">
+            <input
+              id="wpmGoal2"
+              type="number"
+              name="quantity"
+              min="40"
+              max="120"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="editButton" class="button" onclick="editRecord()">
+          Edit Student Record
+        </button>
+        <button id="addButton" class="button" onclick="addEditedRecord()">
+          Save Student Record
+        </button>
+        <button class="button" onclick="closeRecord()">Close Record</button>
+      </div>
+    </div>
+    <div id="list">
+      <div class="header">
+        <h1>Available Students</h1>
+      </div>
+      <div class="entry">
+        <table id="studentsList" border="1">
+          <tr>
+            <th style="width:10%">Index</th>
+            <th style="width:30%">Name</th>
+            <th style="width:20%"></th>
+            <th style="width:20%"></th>
+          </tr>
+        </table>
+      </div>
+      <p id="demo"></p>
+      <div class="buttons">
+        <button id="myBtn" class="button">
+          <a style="text-decoration:none" href="addstudent.html">
+            Add Student Record</a
+          >
+        </button>
+        <button id="myBtn" class="button" onclick="viewStudents()">
+          View Avalilable Students
+        </button>
+        <button id="myBtn" class="button">
+          <a style="text-decoration:none" href="students.html">Go Back</a>
+        </button>
+      </div>
+    </div>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.422.0.min.js"></script>
+    <script>
+      //to get the available students list
+      var storiesTABLE = "stories";
+      var studentsTABLE = "students";
+      var dynamodb;
+      var docClient;
+      var currentKey;
+
+      function viewStudents() {
+        AWS.config.update({
+          region: "us-west-2",
+          accessKeyId: "AKIATXEHTWCA5O2HISEX",
+          secretAccessKey: "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"
+        });
+        dynamodb = new AWS.DynamoDB();
+        docClient = new AWS.DynamoDB.DocumentClient();
+        getStudentsList(studentsTABLE, displayStudentsList);
+      }
+
+      function displayStudentsList(dbcontent) {
+        console.log(dbcontent);
+        var students = dbcontent.students;
+        var table = document.getElementById("studentsList");
+        var tableRows = table.getElementsByTagName("tr");
+        var rowCount = tableRows.length;
+        console.log(tableRows);
+        while (table.getElementsByTagName("tr").length > 1) {
           table.deleteRow(1);
           console.log(tableRows);
-      }
-      console.log(students);
-      students.forEach(function(entry){
-        console.log(entry);
-        var row=table.insertRow();
-        var idx=row.insertCell();
-        var key=entry.Name;
-        idx.innerHTML = entry.Index;
-        var name=row.insertCell();
-        name.innerHTML = key;
-        console.log(key);
-        var open = row.insertCell();
-        var del = row.insertCell();
-        var linkText = document.createTextNode("Open Student Record");
-        open.appendChild(linkText);
-        var linkText2 = document.createTextNode("Delete Student Record");
-        del.appendChild(linkText2);
-        open.onclick=function() {displayRecord(key);};
-        del.onclick=function() {deleteRecord(key);};
-      });
-    }
-
-function closeRecord(){
-  document.getElementById("curRecord").style.display = "block";
-  document.getElementById("newRecord").style.display = "none";
-  document.getElementById("addButton").style.display = "none";
-  document.getElementById("editButton").style.display = "block";
-  document.getElementById("list").style.display = "block";
-  document.getElementById("currentStudent").style.display = "none";
-}
-
-function editRecord(){
-  document.getElementById("studentName2").innerHTML=document.getElementById("studentName1").innerHTML;
-  document.getElementById("grade2").innerHTML=document.getElementById("grade1").innerHTML;
-  document.getElementById("wpm2").value=document.getElementById("wpm1").innerHTML;
-  document.getElementById("wpmGoal2").value=document.getElementById("wpmGoal1").innerHTML;
-  document.getElementById("curRecord").style.display = "none";
-  document.getElementById("newRecord").style.display = "block";
-  document.getElementById("addButton").style.display = "block";
-  document.getElementById("editButton").style.display = "none";
-}
-
-function addData(table,name1,grade1,wpm1,wpmGoal1){
-    var params = {
-        TableName :table,
-        Item:{
-            "name": name1,
-            "grade": grade1,
-            "wpm": wpm1,
-            "wpmGoal": wpmGoal1
         }
-    };
-    docClient.put(params, function(err, data) {
-        if (err) {
+        console.log(students);
+        students.forEach(function(entry) {
+          console.log(entry);
+          var row = table.insertRow();
+          var idx = row.insertCell();
+          var key = entry.Name;
+          idx.innerHTML = entry.Index;
+          var name = row.insertCell();
+          name.innerHTML = key;
+          console.log(key);
+          var open = row.insertCell();
+          var del = row.insertCell();
+          var linkText = document.createTextNode("Open Student Record");
+          open.appendChild(linkText);
+          var linkText2 = document.createTextNode("Delete Student Record");
+          del.appendChild(linkText2);
+          open.onclick = function() {
+            displayRecord(key);
+          };
+          del.onclick = function() {
+            deleteRecord(key);
+          };
+        });
+      }
+
+      function closeRecord() {
+        document.getElementById("curRecord").style.display = "block";
+        document.getElementById("newRecord").style.display = "none";
+        document.getElementById("addButton").style.display = "none";
+        document.getElementById("editButton").style.display = "block";
+        document.getElementById("list").style.display = "block";
+        document.getElementById("currentStudent").style.display = "none";
+      }
+
+      function editRecord() {
+        document.getElementById(
+          "studentName2"
+        ).innerHTML = document.getElementById("studentName1").innerHTML;
+        document.getElementById("grade2").innerHTML = document.getElementById(
+          "grade1"
+        ).innerHTML;
+        document.getElementById("wpm2").value = document.getElementById(
+          "wpm1"
+        ).innerHTML;
+        document.getElementById("wpmGoal2").value = document.getElementById(
+          "wpmGoal1"
+        ).innerHTML;
+        document.getElementById("curRecord").style.display = "none";
+        document.getElementById("newRecord").style.display = "block";
+        document.getElementById("addButton").style.display = "block";
+        document.getElementById("editButton").style.display = "none";
+      }
+
+      function addData(table, name1, grade1, wpm1, wpmGoal1) {
+        var params = {
+          TableName: table,
+          Item: {
+            name: name1,
+            grade: grade1,
+            wpm: wpm1,
+            wpmGoal: wpmGoal1
+          }
+        };
+        docClient.put(params, function(err, data) {
+          if (err) {
             //console.log('error storing data');
             //console.error(JSON.stringify(err, undefined, 2));
             alert("Error editing data. Please try again!");
-        } else {
+          } else {
             //console.log('data stored');
             //console.log(JSON.stringify(data, undefined, 2));
             closeRecord();
-        }
-    });
-}
+          }
+        });
+      }
 
-function addEditedRecord(){
-  var oldkey=document.getElementById("studentName1").innerHTML;
-  var newkey=document.getElementById("studentName2").value;
-  var newgrade=document.getElementById("grade2").innerHTML;
-  var newwpm=document.getElementById("wpm2").value;
-  var newwpmGoal=document.getElementById("wpmGoal2").value;
-  var params = {
-        TableName:studentsTABLE,
-        Key:{
-            "name":oldkey
-        }
-  };
-  docClient.delete(params, function(err, data) {
-        if (err) {
-          console.log(JSON.stringify(err, undefined, 2));
-        } else {
-          addData(studentsTABLE,newkey,newgrade,newwpm,newwpmGoal);
-        }
-    });
-}
-
-function displayRecord(key){
-  getRecordContent(studentsTABLE,key,displayRecordCallback);
-}
-
-function getRecordContent(table, key, callback){
-    var params = {
-        TableName: table,
-        Key:{
-            "name": key
-        }
-    };
-    docClient.get(params, function(err, data) {
-        if (err) {
+      function addEditedRecord() {
+        var oldkey = document.getElementById("studentName1").innerHTML;
+        var newkey = document.getElementById("studentName2").value;
+        var newgrade = document.getElementById("grade2").innerHTML;
+        var newwpm = document.getElementById("wpm2").value;
+        var newwpmGoal = document.getElementById("wpmGoal2").value;
+        var params = {
+          TableName: studentsTABLE,
+          Key: {
+            name: oldkey
+          }
+        };
+        docClient.delete(params, function(err, data) {
+          if (err) {
             console.log(JSON.stringify(err, undefined, 2));
-        } else {
+          } else {
+            addData(studentsTABLE, newkey, newgrade, newwpm, newwpmGoal);
+          }
+        });
+      }
+
+      function displayRecord(key) {
+        getRecordContent(studentsTABLE, key, displayRecordCallback);
+      }
+
+      function getRecordContent(table, key, callback) {
+        var params = {
+          TableName: table,
+          Key: {
+            name: key
+          }
+        };
+        docClient.get(params, function(err, data) {
+          if (err) {
+            console.log(JSON.stringify(err, undefined, 2));
+          } else {
             //console.log(data);
-            callback(data.Item.name,data.Item.grade,data.Item.wpm,data.Item.wpmGoal);
-        }
-    });
-}
+            callback(
+              data.Item.name,
+              data.Item.grade,
+              data.Item.wpm,
+              data.Item.wpmGoal
+            );
+          }
+        });
+      }
 
-function displayRecordCallback(recName,recGrade,recWPM,recWPMGoal){
-  document.getElementById("studentName1").innerHTML = recName;
-  document.getElementById("grade1").innerHTML = recGrade;
-  document.getElementById("wpm1").innerHTML = recWPM;
-  document.getElementById("wpmGoal1").innerHTML = recWPMGoal;
-  document.getElementById("currentStudent").style.display = "block";
-  document.getElementById("list").style.display = "none";
-  document.getElementById("addButton").style.display = "none";
-  document.getElementById("editButton").style.display = "block";
-  document.getElementById("curRecord").style.display = "block";
-  document.getElementById("newRecord").style.display = "none";
-}
+      function displayRecordCallback(recName, recGrade, recWPM, recWPMGoal) {
+        document.getElementById("studentName1").innerHTML = recName;
+        document.getElementById("grade1").innerHTML = recGrade;
+        document.getElementById("wpm1").innerHTML = recWPM;
+        document.getElementById("wpmGoal1").innerHTML = recWPMGoal;
+        document.getElementById("currentStudent").style.display = "block";
+        document.getElementById("list").style.display = "none";
+        document.getElementById("addButton").style.display = "none";
+        document.getElementById("editButton").style.display = "block";
+        document.getElementById("curRecord").style.display = "block";
+        document.getElementById("newRecord").style.display = "none";
+      }
 
-function deleteRecord(key){
-  var params = {
-        TableName:studentsTABLE,
-        Key:{
-            "name":key
-        }
-  };
-  docClient.delete(params, function(err, data) {
-        if (err) {
-          console.log(JSON.stringify(err, undefined, 2));
-        } else {
-          console.log(key+" deleted");
-        }
-    });
-}
+      function deleteRecord(key) {
+        var params = {
+          TableName: studentsTABLE,
+          Key: {
+            name: key
+          }
+        };
+        docClient.delete(params, function(err, data) {
+          if (err) {
+            console.log(JSON.stringify(err, undefined, 2));
+          } else {
+            console.log(key + " deleted");
+          }
+        });
+      }
 
-function getStudentsList(table,callback) {
-  var dbcontent = {};
-  var students = [];
-  dbcontent.students = students;
-  var params = {
-        TableName: studentsTABLE,
-        ProjectionExpression: "#nm, grade, wpm, wpmGoal",
-        ExpressionAttributeNames: {
-            "#nm": "name",
-        },
-    };
-  docClient.scan(params, onScan);
-  function onScan(err, data) {
-        if (err) {
+      function getStudentsList(table, callback) {
+        var dbcontent = {};
+        var students = [];
+        dbcontent.students = students;
+        var params = {
+          TableName: studentsTABLE,
+          ProjectionExpression: "#nm, grade, wpm, wpmGoal",
+          ExpressionAttributeNames: {
+            "#nm": "name"
+          }
+        };
+        docClient.scan(params, onScan);
+
+        function onScan(err, data) {
+          if (err) {
             console.error(JSON.stringify(err, undefined, 2));
-        } else {
+          } else {
             // Print all the movies
-            var count=0;
+            var count = 0;
             data.Items.forEach(function(student) {
-                count=count+1;
-                var record = {
-                  "Index": count,
-                  "Name": student.name
-                }
-                students.push(record);
-                console.log(student.name + ": " + student.grade + ": " + student.wpm + ": " + student.wpmGoal);
-            });  
-            callback(dbcontent);        
+              count = count + 1;
+              var record = {
+                Index: count,
+                Name: student.name
+              };
+              students.push(record);
+              console.log(
+                student.name +
+                  ": " +
+                  student.grade +
+                  ": " +
+                  student.wpm +
+                  ": " +
+                  student.wpmGoal
+              );
+            });
+            callback(dbcontent);
+          }
         }
-  }
-}
-</script>
-</body>
+      }
+    </script>
+  </body>
 </html>
