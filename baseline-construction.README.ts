@@ -14,6 +14,24 @@ Each file and project has it's documentation in it relaying the changes made for
 I also did general code prettying and cleanup. A lot more needs done!
 */
 
+/*
+How do I baseline some data in Reading Races?
+
+You want to compare RR system to another system or a control group.
+
+You should have some data that has:
+- Sounds files of stories being reading (preferably wav)
+- A map of what story is trying to be said in each file
+- Some marking of each file of it's correctness (i.e. phonem information, correct/incorrect, labels for each word)
+
+To baseline against the data:
+- Add all the stories to RR (use chrome-snippets/add-bulk-stories)
+- Make sure all wav files are in the right and generate reference files for all RR stories (see generateRefFile.html)
+- Make sure all wav files are in the right place and run baseline in studentMenu.html
+
+This will output the data that you can use to reason about the accuracy and precision of reading races.
+*/
+
 /* SOUNDFLOWER NOTES 
 Soundflower was used often in this baseline project. Soundflower is a virtual sound card. It is for mac.
 It is used to channel input and output virtually to maximize quality.
