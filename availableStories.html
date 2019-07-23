@@ -227,11 +227,7 @@
       var currentKey;
 
       function viewStories() {
-        AWS.config.update({
-          region: "us-west-2",
-          accessKeyId: "AKIATXEHTWCA5O2HISEX",
-          secretAccessKey: "VwovAB/aR59/p6do5OwmLdzJn6vmEIN0zi+uaJhH"
-        });
+        // AWS.config.update(); // paste your config
         dynamodb = new AWS.DynamoDB();
         docClient = new AWS.DynamoDB.DocumentClient();
         getStoriesList(storiesTABLE, displayStoriesList);

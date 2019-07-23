@@ -180,11 +180,7 @@
       }
       //to initialize the database
       function initStudentsDb() {
-        AWS.config.update({
-          region: "us-west-2",
-          accessKeyId: "AKIATXEHTWCA5O2HISEX",
-          secretAccessKey: "VwovAB/aR59/p6do5OwmLdzJn6vmEIN0zi+uaJhH"
-        });
+        //AWS.config.update(); paste your config
         var stuParams = {
           TableName: studentsTABLE,
           KeySchema: [
