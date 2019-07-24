@@ -114,6 +114,7 @@
         color: white;
       }
     </style>
+    <script type="text/javascript" src="config.js"></script>
   </head>
 
   <body onload="viewStudents()">
@@ -242,7 +243,7 @@
       var currentKey;
 
       function viewStudents() {
-        // AWS.config.update(); paste your config
+        AWS.config.update(awsConfig);
         dynamodb = new AWS.DynamoDB();
         docClient = new AWS.DynamoDB.DocumentClient();
         getStudentsList(studentsTABLE, displayStudentsList);

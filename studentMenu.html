@@ -197,6 +197,7 @@
         padding: 7px;
       }
     </style>
+    <script type="text/javascript" src="config.js"></script>
   </head>
 
   <body onload="init()">
@@ -300,7 +301,7 @@
       var docClient;
 
       function init() {
-        // AWS.config.update(); paste your config
+        AWS.config.update(awsConfig);
         dynamodb = new AWS.DynamoDB();
         docClient = new AWS.DynamoDB.DocumentClient();
       }

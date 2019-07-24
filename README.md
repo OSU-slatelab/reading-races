@@ -2,7 +2,22 @@
 
 Reading Races is a Browser Enabled Speech Recognizer application aims to improve reading fluency and comprehension of 1st and 2nd grade students at risk for learning disabilities/reading failure by combining repeated readings, cultural relevance, affirmations and goal setting.
 
-# AWS Usage/ High Bills
+# AWS Usage
+
+DO NOT COMMIT YOUR ACCESS KEYS TO AWS. THIS IS A MASSIVE BREECH OF SECURITY AND WILL RESULT IN THE STEALING OF YOUR AWS ACCOUNT
+
+You need to configure AWS access with file outside of git. I have set this up to be config.js
+Create the config.js file manually and make it look like
+
+var awsConfig = {
+region: "us-west-2",
+accessKeyId: "accessKey",
+secretAccessKey: "secretAccessKey"
+};
+
+To get accessKeyId and secretAccessKey, you need to create an AWS account and create IAM user with full DynamoDB access.
+
+# High AWS Bills - Be Careful
 
 This project uses DynamoDB, what is a backend-as-a-service. This is a paid service and we have had mutltiple developers
 fall into the trap of huge AWS bills. We have since fixed this.
