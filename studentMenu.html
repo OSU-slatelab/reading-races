@@ -355,17 +355,21 @@
         baselineOutput =
           JSON.parse(localStorage.getItem("baselineOutput")) || {}; // look for previously generated output
 
-        var rawFile = new XMLHttpRequest();
-        rawFile.open("GET", "baselineInputData.json", false);
-        rawFile.onreadystatechange = function() {
-          if (rawFile.readyState === 4) {
-            if (rawFile.status === 200 || rawFile.status == 0) {
-              const allText = JSON.parse(rawFile.responseText);
-              constructBaselineHelper(allText, 0, 0);
+        showStories();
+
+        setTimeout(() => {
+          var rawFile = new XMLHttpRequest();
+          rawFile.open("GET", "baselineInputData.json", false);
+          rawFile.onreadystatechange = function() {
+            if (rawFile.readyState === 4) {
+              if (rawFile.status === 200 || rawFile.status == 0) {
+                const allText = JSON.parse(rawFile.responseText);
+                constructBaselineHelper(allText, 0, 0);
+              }
             }
-          }
-        };
-        rawFile.send(null);
+          };
+          rawFile.send(null);
+        }, 10000); // to wait for stories to show
       }
 
       function constructBaselineHelper(wavStructure, index) {
@@ -388,21 +392,31 @@
                 // and do the generate the baseline entry
                 constructBaselineHelper(wavStructure, index);
               }, audio.duration * 1000 + 12000); // audio duration converted to ms plus magic 12 seconds to wait for speech recognizer to stop
-              // Your machine might need more or less time. You will see 'error here!' in the recognized test field if this is too short
+              // Your machine might need more or less time. You will see 'error here!' in the recognized text field if this is too short
             };
             currentWavFile = currInputType;
-            document.getElementById("curTitle").innerHTML =
-              currInputType.intendedPhrase;
-            passageContent = currInputType.intendedPhrase;
-            document.getElementById("passage").innerHTML =
-              currInputType.intendedPhrase;
-            // isReferenceFileAvailable = false; //hmmm check this
-            passageContentArray = currInputType.intendedPhrase.split(" ");
-            startIndexing(currInputType.intendedPhrase.split(" "));
-            startReading();
+            //document.getElementById("curTitle").innerHTML = // use this if you dont want to use the database
+            //  currInputType.intendedPhrase;
+            //passageContent = currInputType.intendedPhrase;
+            //document.getElementById("passage").innerHTML =
+            //  currInputType.intendedPhrase;
+            // isReferenceFileAvailable = false;
+            // passageContentArray = currInputType.intendedPhrase.split(" ");
+            // startIndexing(currInputType.intendedPhrase.split(" "));
+            displaycurrentStory(
+              storiesTABLE,
+              currInputType.wavFileId.substring(5, 7) +
+                "-" +
+                currInputType.intendedPhrase
+            );
+
             setTimeout(() => {
-              audio.play();
-            }, 1000); // add a 1 second delay to make sure we don't miss the first word
+              startReading();
+              setTimeout(() => {
+                audio.play();
+              }, 1000); // add a 1 second delay to make sure we don't miss the first word
+            }, 2000); // add 2 second to wait for story to delay
+
             lookingForCurrInput = false;
           }
           index++;
@@ -536,7 +550,8 @@
       }
 
       function displaycurrentStory(stdtable, key) {
-        document.getElementById("storiesDropdown").classList.toggle("show");
+        console.log(key);
+        //document.getElementById("storiesDropdown").classList.toggle("show"); remove for baseline purposes
         var params = {
           TableName: stdtable,
           Key: {
@@ -547,6 +562,7 @@
           if (err) {
             console.error(JSON.stringify(err, undefined, 2));
           } else {
+            console.log(data);
             document.getElementById("curTitle").innerHTML = data.Item.title;
             passageContent = data.Item.content
               .replace(/[\r\n]+/g, " ")
@@ -893,7 +909,6 @@
           );
 
           //console.log(baselineOutput);
-          console.log(Object.keys(baselineOutput).length);
           localStorage.setItem(
             "baselineOutput",
             JSON.stringify(baselineOutput)
