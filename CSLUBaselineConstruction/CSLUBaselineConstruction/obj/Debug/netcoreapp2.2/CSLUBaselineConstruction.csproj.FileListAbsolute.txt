@@ -1,0 +1,14 @@
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/bin/Debug/netcoreapp2.2/CSLUBaselineConstruction.deps.json
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/bin/Debug/netcoreapp2.2/CSLUBaselineConstruction.runtimeconfig.json
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/bin/Debug/netcoreapp2.2/CSLUBaselineConstruction.runtimeconfig.dev.json
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/bin/Debug/netcoreapp2.2/CSLUBaselineConstruction.dll
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/bin/Debug/netcoreapp2.2/CSLUBaselineConstruction.pdb
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.csprojAssemblyReference.cache
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.csproj.CoreCompileInputs.cache
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.RazorAssemblyInfo.cache
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.RazorAssemblyInfo.cs
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.AssemblyInfoInputs.cache
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.AssemblyInfo.cs
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.RazorTargetAssemblyInfo.cache
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.dll
+/Users/Contence/Projects/CSLUBaselineConstruction/CSLUBaselineConstruction/obj/Debug/netcoreapp2.2/CSLUBaselineConstruction.pdb

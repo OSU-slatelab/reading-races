@@ -1,0 +1,30 @@
+﻿<Properties StartupConfiguration="{5AF04ED0-2620-48CE-AC27-A4234829B6E0}|Default">
+  <MonoDevelop.Ide.ItemProperties.CSLUBaselineConstruction PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="CSLUBaselineConstruction/Startup.cs">
+    <Files>
+      <File FileName="CSLUBaselineConstruction/Program.cs" Line="17" Column="1" />
+      <File FileName="CSLUBaselineConstruction/Startup.cs" Line="102" Column="63" />
+      <File FileName="CSLUBaselineConstruction/Properties/launchSettings.json" Line="1" Column="1" />
+      <File FileName="CSLUBaselineConstruction/appsettings.json" Line="1" Column="1" />
+      <File FileName="CSLUBaselineConstruction/intendedPhraseMap.json" Line="1" Column="3298" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="CSLUBaselineConstruction" expanded="True">
+            <Node name="CSLUBaselineConstruction" expanded="True">
+              <Node name="Properties" expanded="True" />
+              <Node name="Startup.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
