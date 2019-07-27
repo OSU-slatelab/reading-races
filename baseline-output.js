@@ -1,4 +1,4 @@
-export const baselineOutput = {
+var baselineOutput = {
   'ksc38500.wav': {
     intendedPhrase: 'the flood took a car down the street',
     labeledAsCorrectInPreviousDataSet: true,

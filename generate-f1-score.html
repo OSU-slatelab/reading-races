@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background-color: #eaeded;
+      }
+
+      .button {
+        width: 100%;
+        height: 100%;
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        overflow: auto;
+        border-radius: 8px;
+        padding: 15px 31px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background-color: #555;
+        color: white;
+      }
+
+      .header {
+        height: 5%;
+        background-color: #2196f3;
+        color: white;
+        text-align: center;
+        padding: 7px;
+      }
+    </style>
+    <script type="text/javascript" src="baseline-output.js"></script>
+  </head>
+
+  <body>
+    <button onclick="generateF1Score()" class="button">
+      Generate in the console
+    </button>
+
+    <script>
+      {
+        /* The F1 score is the geometric mean of two other scores: the precision and the recall.
+
+            True positives: mispronunciations detected
+            True negatives: correct pronunciations detected
+            False positives: correct pronunciations marked incorrect
+            False negatives: mispronunciations marked correct
+
+            // I just don't have enough data to do this properly.
+            // CSLU doesn't have word level mispronunciations
+
+            Precision: TP / (TP + FP)
+            Recall: TP / (TP + FN)
+            F1: 2 * P * R / (P + R)
+
+            'ksc38500.wav': {
+              intendedPhrase: 'the flood took a car down the street',
+              labeledAsCorrectInPreviousDataSet: true,
+              recognizedText: 'the flood took a car down the street oops',
+              correctWords: [
+                'the',
+                'took',
+                'a',
+                'the',
+              ],
+              incorrectWords: [
+                'flood',
+                'car',
+                'down',
+              ],
+            },
+            'ks13p2o0.wav': {
+              intendedPhrase: 'one zero zero three zero seven eight',
+              labeledAsCorrectInPreviousDataSet: false,
+              recognizedText: '10018', // gotta catch this
+              correctWords: [],
+              incorrectWords: [
+                'one',
+              ],
+            },
+            */
+      }
+      function generateF1Score() {
+        let numberTotal = 0;
+        let numberOfSameLabel = 0;
+
+        Object.keys(baselineOutput).map(key => {
+          outputData = baselineOutput[key];
+          const lowerIntendedPhrase = outputData.intendedPhrase.toLowerCase();
+
+          const lowerRecognizedText = outputData.recognizedText.toLowerCase();
+
+          let convertedRecognizedText = "";
+
+          for (var i = 0; i < lowerRecognizedText.length; i++) {
+            const char = lowerRecognizedText.charAt(i);
+
+            if ("0123456789".includes(char)) {
+              convertedRecognizedText += inWords(char) + " ";
+            } else {
+              convertedRecognizedText += char;
+            }
+          }
+
+          convertedRecognizedText = convertedRecognizedText.toLowerCase();
+
+          if (
+            (lowerIntendedPhrase.includes(convertedRecognizedText) &&
+              outputData.labeledAsCorrectInPreviousDataSet) ||
+            (!lowerIntendedPhrase.includes(convertedRecognizedText) &&
+              !outputData.labeledAsCorrectInPreviousDataSet)
+          )
+            numberOfSameLabel++;
+
+          numberTotal++;
+        });
+
+        console.log(
+          "Correct number(same): " +
+            numberOfSameLabel +
+            " Total number: " +
+            numberTotal +
+            " as a fraction: " +
+            numberOfSameLabel / numberTotal
+        );
+      }
+
+      function inWords(digitString) {
+        switch (digitString) {
+          case "0":
+            return "zero";
+          case "1":
+            return "one";
+          case "2":
+            return "two";
+          case "3":
+            return "three";
+          case "4":
+            return "four";
+          case "5":
+            return "five";
+          case "6":
+            return "six";
+          case "7":
+            return "seven";
+          case "8":
+            return "eight";
+          case "9":
+            return "nine";
+        }
+      }
+    </script>
+  </body>
+</html>
