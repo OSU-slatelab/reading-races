@@ -2,9 +2,17 @@
 
 Reading Races is a Browser Enabled Speech Recognizer application aims to improve reading fluency and comprehension of 1st and 2nd grade students at risk for learning disabilities/reading failure by combining repeated readings, cultural relevance, affirmations and goal setting.
 
+# Installation
+
+=> Install Python 3 if it is not available in your system.
+=> Run the following command in the command window with the downloaded readingRaces folder as the current directory with a port number
+python -m http.server 8100 (for windows OS)
+python3 -m http.server 8100 (for MAC OS)
+=> Open the "readingRaces.html".
+
 # AWS Usage
 
-DO NOT COMMIT YOUR ACCESS KEYS TO AWS. THIS IS A MASSIVE BREECH OF SECURITY AND WILL RESULT IN THE STEALING OF YOUR AWS ACCOUNT
+DO NOT COMMIT YOUR ACCESS KEYS TO GIT. THIS IS A MASSIVE BREECH OF SECURITY AND WILL RESULT IN THE STEALING OF YOUR AWS ACCOUNT
 
 You need to configure AWS access with file outside of git. I have set this up to be config.js
 Create the config.js file manually and make it look like
@@ -15,7 +23,22 @@ accessKeyId: "accessKey",
 secretAccessKey: "secretAccessKey"
 };
 
-To get accessKeyId and secretAccessKey, you need to create an AWS account and create IAM user with full DynamoDB access.
+This is all that should be in the file.
+
+To get accessKeyId and secretAccessKey, you need to create an AWS account and create IAM user with full DynamoDB access:
+
+1. Sign up for AWS.
+2. Get an AWS access key.
+   a) Open the IAM console
+   (https://console.aws.amazon.com/iam/home?#/home).
+   b) In the navigation pane of the console, choose Users.
+   c) Choose your IAM user name (not the check box).
+   d) Choose the Security credentials tab and then choose Create access key.
+   e) To see the new access key, choose Show. Your credentials will look something like this:
+   Access key ID: AKIAIOSFODNN7EXAMPLE
+   Secret access key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+Created stories from CSLU data is in cslu-rr-stories.csv
 
 # High AWS Bills - Be Careful
 
